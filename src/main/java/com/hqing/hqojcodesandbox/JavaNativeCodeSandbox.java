@@ -67,7 +67,7 @@ public class JavaNativeCodeSandbox implements CodeSandbox {
         File userCodeFile = FileUtil.writeString(code, userCodePath, StandardCharsets.UTF_8);
 
         //2. 编译用户代码, 得到class文件
-        String compileCmd = String.format("javac -encoding utf-8 %s", userCodeFile.getAbsolutePath());
+        String compileCmd = String.format("javac -encoding utf-8 -J-Dfile.encoding=UTF-8 %s", userCodeFile.getAbsolutePath());
         try {
             //执行cmd命令
             Process compileProcess = Runtime.getRuntime().exec(compileCmd);
