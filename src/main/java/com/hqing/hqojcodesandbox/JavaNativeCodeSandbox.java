@@ -34,7 +34,7 @@ public class JavaNativeCodeSandbox implements CodeSandbox {
         ExecuteCodeRequest executeCodeRequest = new ExecuteCodeRequest();
 
         //读取resource目录下的main.java用于测试
-        String code = ResourceUtil.readStr("testCode/simpleComputeArgs/Main.java", StandardCharsets.UTF_8);
+        String code = ResourceUtil.readStr("testCode/unsafeCode/RunFileError.java", StandardCharsets.UTF_8);
         executeCodeRequest.setInputList(Arrays.asList("1 2", "3 4"));
         executeCodeRequest.setCode(code);
         executeCodeRequest.setLanguage("java");
