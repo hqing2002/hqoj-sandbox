@@ -4,6 +4,8 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.dfa.FoundWord;
+import cn.hutool.dfa.WordTree;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import com.hqing.hqojcodesandbox.model.ExecuteMessage;
@@ -11,7 +13,6 @@ import com.hqing.hqojcodesandbox.model.JudgeInfo;
 import com.hqing.hqojcodesandbox.utils.ProcessUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,9 +25,24 @@ import java.util.List;
  */
 public class JavaNativeCodeSandbox implements CodeSandbox {
     //将全局用到的字符串(魔法值)都写成字符串常量, 便于维护
-    public static final String GLOBAL_CODE_DIR_NAME = "tmpCode";
+    private static final String GLOBAL_CODE_DIR_NAME = "tmpCode";
 
-    public static final String GLOBAL_JAVA_CLASS_NAME = "Main.java";
+    private static final String GLOBAL_JAVA_CLASS_NAME = "Main.java";
+
+    //定义程序最大运行时长
+    private static final long MAX_TIME_LIMIT = 5000L;
+
+    //定义字典树存储黑名单
+    private static final WordTree BLACK_KEY_LIST;
+
+    private static final String SECURITY_MANAGER_PATH = "D:\\Code\\hqing\\hqoj\\hqoj-code-sandbox\\src\\main\\resources\\testCode\\security";
+    private static final String SECURITY_CLASS_NAME = "MySecurityManager";
+
+    //在静态代码块中初始化字典树
+    static {
+        BLACK_KEY_LIST = new WordTree();
+        BLACK_KEY_LIST.addWords("File", "exec", "dir", "Dir", "Thread", "write", "bat", "path", "sleep", "Process");
+    }
 
     //创建main方法进行测试
     public static void main(String[] args) {
@@ -34,7 +50,8 @@ public class JavaNativeCodeSandbox implements CodeSandbox {
         ExecuteCodeRequest executeCodeRequest = new ExecuteCodeRequest();
 
         //读取resource目录下的main.java用于测试
-        String code = ResourceUtil.readStr("testCode/unsafeCode/RunFileError.java", StandardCharsets.UTF_8);
+        String path = "testCode/unsafeCode/RunFileError.java";
+        String code = ResourceUtil.readStr(path, StandardCharsets.UTF_8);
         executeCodeRequest.setInputList(Arrays.asList("1 2", "3 4"));
         executeCodeRequest.setCode(code);
         executeCodeRequest.setLanguage("java");
@@ -48,6 +65,14 @@ public class JavaNativeCodeSandbox implements CodeSandbox {
         List<String> inputList = executeCodeRequest.getInputList();
         String code = executeCodeRequest.getCode();
         String language = executeCodeRequest.getLanguage();
+
+        //0. 代码校验
+        FoundWord foundWord = BLACK_KEY_LIST.matchWord(code);
+        //如果存在违禁词
+        if (foundWord != null) {
+            System.out.println("包含禁止词:" + foundWord.getFoundWord());
+            return null;
+        }
 
         //1. 把用户代码存入文件
         //获取工作目录(在IDE中为项目根目录)
@@ -73,21 +98,33 @@ public class JavaNativeCodeSandbox implements CodeSandbox {
             Process compileProcess = Runtime.getRuntime().exec(compileCmd);
             ExecuteMessage processMessage = ProcessUtils.getProcessMessage(compileProcess, "编译");
             System.out.println(processMessage);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return getErrorResponse(e);
         }
 
         //3. 执行代码, 得到输出信息
         List<ExecuteMessage> executeMessageList = new ArrayList<>();
         for (String inputArgs : inputList) {
-            String runCmd = String.format("java -Dfile.encoding=UTF-8 -cp %s Main %s", userCodeParentPath, inputArgs);
+            String runCmd = String.format("java -Xmx256m -Dfile.encoding=UTF-8 -cp %s;%s -Djava.security.manager=%s Main %s", userCodeParentPath, SECURITY_MANAGER_PATH, SECURITY_CLASS_NAME, inputArgs);
             try {
                 //执行cmd命令
-                Process compileProcess = Runtime.getRuntime().exec(runCmd);
-                ExecuteMessage processMessage = ProcessUtils.getProcessMessage(compileProcess, "运行");
+                Process runProcess = Runtime.getRuntime().exec(runCmd);
+                //开启时间守护线程
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(MAX_TIME_LIMIT);
+                        if (runProcess.isAlive()) {
+                            System.out.println("运行超时了, 中断");
+                            runProcess.destroy();
+                        }
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
+                ExecuteMessage processMessage = ProcessUtils.getProcessMessage(runProcess, "运行");
                 System.out.println(processMessage);
                 executeMessageList.add(processMessage);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 return getErrorResponse(e);
             }
         }
