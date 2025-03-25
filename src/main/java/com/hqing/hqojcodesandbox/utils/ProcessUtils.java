@@ -1,6 +1,6 @@
 package com.hqing.hqojcodesandbox.utils;
 
-import com.hqing.hqojcodesandbox.model.ProcessMessage;
+import com.hqing.hqojcodesandbox.model.ExecuteMessage;
 import org.springframework.util.StopWatch;
 
 import java.io.*;
@@ -17,14 +17,14 @@ public class ProcessUtils {
      * @param runProcess
      * @param operateName
      */
-    public static ProcessMessage getProcessMessage(Process runProcess, String operateName) {
-        ProcessMessage processMessage = new ProcessMessage();
+    public static ExecuteMessage getProcessMessage(Process runProcess, String operateName) {
+        ExecuteMessage executeMessage = new ExecuteMessage();
         try (BufferedReader stdReader = new BufferedReader(new InputStreamReader(runProcess.getInputStream()));
              BufferedReader errReader = new BufferedReader(new InputStreamReader(runProcess.getErrorStream()))) {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
             int exitValue = runProcess.waitFor();
-            processMessage.setExitValue(exitValue);
+            executeMessage.setExitValue(exitValue);
 
             // 读取标准输出
             StringBuilder stdOutput = new StringBuilder();
@@ -32,14 +32,14 @@ public class ProcessUtils {
             while ((line = stdReader.readLine()) != null) {
                 stdOutput.append(line);
             }
-            processMessage.setMessage(stdOutput.toString());
+            executeMessage.setMessage(stdOutput.toString());
 
             // 读取错误输出
             StringBuilder errOutput = new StringBuilder();
             while ((line = errReader.readLine()) != null) {
                 errOutput.append(line).append("\n");
             }
-            processMessage.setErrorMessage(errOutput.toString());
+            executeMessage.setErrorMessage(errOutput.toString());
 
             if (exitValue == 0) {
                 System.out.println(operateName + "成功");
@@ -47,12 +47,12 @@ public class ProcessUtils {
                 System.out.println(operateName + "失败, 错误码: " + exitValue);
             }
             stopWatch.stop();
-            processMessage.setTime(stopWatch.getLastTaskTimeMillis());
+            executeMessage.setTime(stopWatch.getLastTaskTimeMillis());
         } catch (InterruptedException | IOException e) {
             Thread.currentThread().interrupt(); // 恢复中断状态
             throw new RuntimeException(e);
         }
-        return processMessage;
+        return executeMessage;
     }
 
     /**
@@ -62,8 +62,8 @@ public class ProcessUtils {
      * @param input
      * @return
      */
-    public static ProcessMessage runInteractProcessAndGetMessage(Process runProcess, String input) {
-        ProcessMessage processMessage = new ProcessMessage();
+    public static ExecuteMessage runInteractProcessAndGetMessage(Process runProcess, String input) {
+        ExecuteMessage executeMessage = new ExecuteMessage();
         try (OutputStream outputStream = runProcess.getOutputStream();
              InputStream inputStream = runProcess.getInputStream();
              OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream)) {
@@ -79,7 +79,7 @@ public class ProcessUtils {
             while ((compileOutputLine = bufferedReader.readLine()) != null) {
                 compileOutputStringBuilder.append(compileOutputLine);
             }
-            processMessage.setMessage(compileOutputStringBuilder.toString());
+            executeMessage.setMessage(compileOutputStringBuilder.toString());
             //记得资源释放，否则会卡死
             outputStreamWriter.close();
             outputStream.close();
@@ -89,6 +89,6 @@ public class ProcessUtils {
             Thread.currentThread().interrupt(); // 恢复中断状态
             throw new RuntimeException(e);
         }
-        return processMessage;
+        return executeMessage;
     }
 }

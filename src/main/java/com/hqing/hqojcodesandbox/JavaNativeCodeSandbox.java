@@ -8,8 +8,7 @@ import cn.hutool.dfa.FoundWord;
 import cn.hutool.dfa.WordTree;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
-import com.hqing.hqojcodesandbox.model.ProcessMessage;
-import com.hqing.hqojcodesandbox.model.JudgeInfo;
+import com.hqing.hqojcodesandbox.model.ExecuteMessage;
 import com.hqing.hqojcodesandbox.utils.ProcessUtils;
 
 import java.io.File;
@@ -96,14 +95,14 @@ public class JavaNativeCodeSandbox implements CodeSandbox {
         try {
             //执行cmd命令
             Process compileProcess = Runtime.getRuntime().exec(compileCmd);
-            ProcessMessage processMessage = ProcessUtils.getProcessMessage(compileProcess, "编译");
-            System.out.println(processMessage);
+            ExecuteMessage executeMessage = ProcessUtils.getProcessMessage(compileProcess, "编译");
+            System.out.println(executeMessage);
         } catch (Exception e) {
             return getErrorResponse(e);
         }
 
         //3. 执行代码, 得到输出信息
-        List<ProcessMessage> processMessageList = new ArrayList<>();
+        List<ExecuteMessage> executeMessageList = new ArrayList<>();
         for (String inputArgs : inputList) {
             String runCmd = String.format("java -Xmx256m -Dfile.encoding=UTF-8 -cp %s;%s -Djava.security.manager=%s Main %s", userCodeParentPath, SECURITY_MANAGER_PATH, SECURITY_CLASS_NAME, inputArgs);
             try {
@@ -121,9 +120,9 @@ public class JavaNativeCodeSandbox implements CodeSandbox {
                         throw new RuntimeException(e);
                     }
                 }).start();
-                ProcessMessage processMessage = ProcessUtils.getProcessMessage(runProcess, "运行");
-                System.out.println(processMessage);
-                processMessageList.add(processMessage);
+                ExecuteMessage executeMessage = ProcessUtils.getProcessMessage(runProcess, "运行");
+                System.out.println(executeMessage);
+                executeMessageList.add(executeMessage);
             } catch (Exception e) {
                 return getErrorResponse(e);
             }
@@ -136,10 +135,10 @@ public class JavaNativeCodeSandbox implements CodeSandbox {
         //取最大值判断是否超时
         long maxTime = 0L;
 
-        for (ProcessMessage processMessage : processMessageList) {
-            Long time = processMessage.getTime();
-            String message = processMessage.getMessage();
-            String errorMessage = processMessage.getErrorMessage();
+        for (ExecuteMessage executeMessage : executeMessageList) {
+            Long time = executeMessage.getTime();
+            String message = executeMessage.getMessage();
+            String errorMessage = executeMessage.getErrorMessage();
 
             //如果运行中有报错
             if (StrUtil.isNotBlank(errorMessage)) {
@@ -154,15 +153,13 @@ public class JavaNativeCodeSandbox implements CodeSandbox {
         }
 
         //正常完成
-        if (outputList.size() == processMessageList.size()) {
+        if (outputList.size() == executeMessageList.size()) {
             executeCodeResponse.setStatus(1);
         }
         executeCodeResponse.setOutputList(outputList);
-        JudgeInfo judgeInfo = new JudgeInfo();
-        judgeInfo.setTime(maxTime);
+        executeCodeResponse.setTime(maxTime);
         //这里不统计内存, 先写个假数据
-        judgeInfo.setMemory(-1L);
-        executeCodeResponse.setJudgeInfo(judgeInfo);
+        executeCodeResponse.setMemory(-1L);
 
         //5. 文件清理
         if (userCodeFile.getParentFile() != null) {
@@ -184,7 +181,6 @@ public class JavaNativeCodeSandbox implements CodeSandbox {
         executeCodeResponse.setMessage(e.getMessage());
         //表示代码沙箱错误(编译错误)
         executeCodeResponse.setStatus(2);
-        executeCodeResponse.setJudgeInfo(new JudgeInfo());
         return executeCodeResponse;
     }
 }

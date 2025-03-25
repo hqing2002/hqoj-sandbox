@@ -33,7 +33,12 @@ public class ExecuteCodeResponse {
     private Integer status;
 
     /**
-     * 判题信息
+     * 消耗时间(ms)
      */
-    private JudgeInfo judgeInfo;
+    private Long time;
+
+    /**
+     * 消耗内存(kb)
+     */
+    private Long memory;
 }

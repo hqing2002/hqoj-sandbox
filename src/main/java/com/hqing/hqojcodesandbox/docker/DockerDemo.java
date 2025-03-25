@@ -58,8 +58,7 @@ public class DockerDemo {
             dockerClient.startContainerCmd(containerId).exec();
 
             //查看容器输出日志
-            LogContainerCmd logContainerCmd = dockerClient.logContainerCmd(containerId).withStdOut(true).withStdErr(true).withTailAll();
-            logContainerCmd.exec(new ResultCallback.Adapter<Frame>() {
+            ResultCallback.Adapter<Frame> logContainResultCallback = new ResultCallback.Adapter<Frame>() {
                 @Override
                 public void onNext(Frame frame) {
                     StreamType streamType = frame.getStreamType();
@@ -71,7 +70,14 @@ public class DockerDemo {
                         System.out.println("其他类型: " + new String(frame.getPayload()));
                     }
                 }
-            }).awaitCompletion();
+            };
+
+            dockerClient.logContainerCmd(containerId)
+                    .withStdOut(true)
+                    .withStdErr(true)
+                    .withTailAll()
+                    .exec(logContainResultCallback)
+                    .awaitCompletion();
 
             //删除容器
             dockerClient.removeContainerCmd(containerId).withForce(true).exec();
