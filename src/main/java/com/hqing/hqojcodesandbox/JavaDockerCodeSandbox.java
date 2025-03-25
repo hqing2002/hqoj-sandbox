@@ -120,9 +120,6 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
             hostConfig.withMemorySwap(0L);
             //限制用户写入root目录
             hostConfig.withReadonlyRootfs(true);
-            //Seccomp安全配置
-            String config = "{ \"defaultAction\":\"SCMP_ACT_ERRNO\", \"architectures\":[ \"SCMP_ARCH_X86_64\" ], \"syscalls\":[ { \"names\":[ \"read\", \"write\", \"close\", \"fstat\", \"mmap\", \"mprotect\", \"munmap\", \"brk\", \"rt_sigaction\", \"rt_sigprocmask\", \"execve\", \"arch_prctl\", \"exit_group\" ], \"action\":\"SCMP_ACT_ALLOW\" }, { \"names\":[ \"socket\", \"bind\", \"listen\", \"accept\", \"connect\" ], \"action\":\"SCMP_ACT_ALLOW\" }, { \"names\":[ \"clone\", \"fork\", \"kill\", \"ptrace\" ], \"action\":\"SCMP_ACT_ERRNO\" } ] }";
-            hostConfig.withSecurityOpts(Collections.singletonList("seccomp=" + config));
             //设置文件映射, 设置文件权限为只读
             hostConfig.setBinds(new Bind(userCodeParentPath, new Volume("/app"), AccessMode.ro));
 
@@ -200,8 +197,8 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
 
                     @Override
                     public void onComplete() {
-                        super.onComplete();
                         timeOut[0] = false;
+                        super.onComplete();
                     }
                 };
                 //开启定时器统计时间

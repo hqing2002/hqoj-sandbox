@@ -20,15 +20,15 @@ import java.util.Collections;
 @RestController("/")
 public class MainController {
 
-    @GetMapping("/health/{id1}/{id2}/{fileName}")
+    @GetMapping("/health/{id1}/{id2}/{filePath}")
     public String healthCheck(@PathVariable("id1") String id1,
                               @PathVariable("id2") String id2,
-                              @PathVariable("fileName") String fileName) {
+                              @PathVariable("filePath") String filePath) {
         JavaDockerCodeSandbox javaDockerCodeSandbox = new JavaDockerCodeSandbox();
         ExecuteCodeRequest executeCodeRequest = new ExecuteCodeRequest();
 
         //读取resource目录下的main.java用于测试
-        String path = "testCode" + File.separator + fileName + File.separator + "Main.java";
+        String path = "testCode" + File.separator + "unsafeCode" + File.separator + filePath + File.separator + "Main.java";
         String code = ResourceUtil.readStr(path, StandardCharsets.UTF_8);
         executeCodeRequest.setInputList(Collections.singletonList(id1 + " " + id2));
         executeCodeRequest.setCode(code);

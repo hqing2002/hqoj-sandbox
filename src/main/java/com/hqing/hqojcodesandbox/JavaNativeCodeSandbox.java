@@ -49,7 +49,7 @@ public class JavaNativeCodeSandbox implements CodeSandbox {
         ExecuteCodeRequest executeCodeRequest = new ExecuteCodeRequest();
 
         //读取resource目录下的main.java用于测试
-        String path = "testCode/unsafeCode/RunFileError.java";
+        String path = "testCode/test1/Main.java";
         String code = ResourceUtil.readStr(path, StandardCharsets.UTF_8);
         executeCodeRequest.setInputList(Arrays.asList("1 2", "3 4"));
         executeCodeRequest.setCode(code);
