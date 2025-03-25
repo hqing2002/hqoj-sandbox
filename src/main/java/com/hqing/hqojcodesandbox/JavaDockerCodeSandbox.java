@@ -38,7 +38,7 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
 
 
     //判断是否第一次拉取镜像
-    private static Boolean FIRST_INIT = false;
+    private static volatile Boolean FIRST_INIT = true;
 
     @Override
     public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {
@@ -88,19 +88,23 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
 
             //如果是第一次执行则拉取镜像
             if (FIRST_INIT) {
-                PullImageCmd pullImageCmd = dockerClient.pullImageCmd(image);
-                //函数回调
-                PullImageResultCallback pullImageResultCallback = new PullImageResultCallback() {
-                    @Override
-                    public void onNext(PullResponseItem item) {
-                        System.out.println("下载镜像" + item.getStatus());
-                        super.onNext(item);
+                synchronized (JavaDockerCodeSandbox.class) {
+                    if (FIRST_INIT) {
+                        PullImageCmd pullImageCmd = dockerClient.pullImageCmd(image);
+                        //函数回调
+                        PullImageResultCallback pullImageResultCallback = new PullImageResultCallback() {
+                            @Override
+                            public void onNext(PullResponseItem item) {
+                                System.out.println("下载镜像" + item.getStatus());
+                                super.onNext(item);
+                            }
+                        };
+                        //exec执行, awaitCompletion()阻塞等待异步请求完成
+                        pullImageCmd.exec(pullImageResultCallback).awaitCompletion();
+                        FIRST_INIT = false;
+                        System.out.println("拉取镜像完成");
                     }
-                };
-                //exec执行, awaitCompletion()阻塞等待异步请求完成
-                pullImageCmd.exec(pullImageResultCallback).awaitCompletion();
-                FIRST_INIT = false;
-                System.out.println("拉取镜像完成");
+                }
             }
 
             //配置创建容器的参数
