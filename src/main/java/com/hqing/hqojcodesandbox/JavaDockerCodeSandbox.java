@@ -20,7 +20,9 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Docker代码沙箱
@@ -96,8 +98,8 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
                         PullImageResultCallback pullImageResultCallback = new PullImageResultCallback() {
                             @Override
                             public void onNext(PullResponseItem item) {
-                                System.out.println("下载镜像" + item.getStatus());
                                 super.onNext(item);
+                                System.out.println("下载镜像" + item.getStatus());
                             }
                         };
                         //exec执行, awaitCompletion()阻塞等待异步请求完成
@@ -114,6 +116,13 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
             hostConfig.withCpuCount(MAX_CPU_COUNT);
             //设置内存大小
             hostConfig.withMemory(MAX_MEMORY_LIMIT);
+            //禁止内存超限
+            hostConfig.withMemorySwap(0L);
+            //限制用户写入root目录
+            hostConfig.withReadonlyRootfs(true);
+            //Seccomp安全配置
+            String config = "{ \"defaultAction\":\"SCMP_ACT_ERRNO\", \"architectures\":[ \"SCMP_ARCH_X86_64\" ], \"syscalls\":[ { \"names\":[ \"read\", \"write\", \"close\", \"fstat\", \"mmap\", \"mprotect\", \"munmap\", \"brk\", \"rt_sigaction\", \"rt_sigprocmask\", \"execve\", \"arch_prctl\", \"exit_group\" ], \"action\":\"SCMP_ACT_ALLOW\" }, { \"names\":[ \"socket\", \"bind\", \"listen\", \"accept\", \"connect\" ], \"action\":\"SCMP_ACT_ALLOW\" }, { \"names\":[ \"clone\", \"fork\", \"kill\", \"ptrace\" ], \"action\":\"SCMP_ACT_ERRNO\" } ] }";
+            hostConfig.withSecurityOpts(Collections.singletonList("seccomp=" + config));
             //设置文件映射, 设置文件权限为只读
             hostConfig.setBinds(new Bind(userCodeParentPath, new Volume("/app"), AccessMode.ro));
 
@@ -121,6 +130,7 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
             CreateContainerCmd containerCmd = dockerClient.createContainerCmd(image);
             CreateContainerResponse createContainerResponse = containerCmd
                     .withHostConfig(hostConfig)
+                    .withNetworkDisabled(true)
                     .withAttachStdin(true)
                     .withAttachStdout(true)
                     .withAttachStderr(true)
@@ -136,6 +146,7 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
             ResultCallback.Adapter<Statistics> statsResultCallback = new ResultCallback.Adapter<Statistics>() {
                 @Override
                 public void onNext(Statistics statistics) {
+                    super.onNext(statistics);
                     Long memory = statistics.getMemoryStats().getUsage();
                     if (memory != null && memory > maxMemory[0]) {
                         maxMemory[0] = memory;
@@ -165,10 +176,12 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
                 final StringBuilder messageBuilder = new StringBuilder();
                 final StringBuilder errMessageBuilder = new StringBuilder();
                 final int[] exitValue = {0};
+                final boolean[] timeOut = {true};
                 //启动Cmd执行对象, 编写回调函数
                 ResultCallback.Adapter<Frame> execStartResultCallback = new ResultCallback.Adapter<Frame>() {
                     @Override
                     public void onNext(Frame frame) {
+                        super.onNext(frame);
                         //判断输出流类型
                         StreamType streamType = frame.getStreamType();
                         String payload = new String(frame.getPayload(), StandardCharsets.UTF_8);
@@ -184,19 +197,33 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
                             System.out.println("其他错误类型: " + new String(frame.getPayload()));
                         }
                     }
+
+                    @Override
+                    public void onComplete() {
+                        super.onComplete();
+                        timeOut[0] = false;
+                    }
                 };
                 //开启定时器统计时间
                 StopWatch stopWatch = new StopWatch();
                 stopWatch.start();
                 //执行命令并阻塞等待结束
-                dockerClient.execStartCmd(execId).exec(execStartResultCallback).awaitCompletion();
+                dockerClient.execStartCmd(execId)
+                        .exec(execStartResultCallback)
+                        .awaitCompletion(MAX_TIME_LIMIT, TimeUnit.MILLISECONDS);
                 //关闭定时器
                 stopWatch.stop();
+                long time = stopWatch.getLastTaskTimeMillis();
+
+                //如果程序超出我们设定的最大运行时间, 则直接将时间设置为最大值
+                if (timeOut[0]) {
+                    time = Long.MAX_VALUE;
+                }
                 //填充本次运行的信息
                 executeMessage.setMessage(messageBuilder.toString());
                 executeMessage.setErrorMessage(errMessageBuilder.toString());
                 executeMessage.setExitValue(exitValue[0]);
-                executeMessage.setTime(stopWatch.getLastTaskTimeMillis());
+                executeMessage.setTime(time);
                 executeMessageList.add(executeMessage);
             }
             //先关闭回调适配器（停止处理数据）, 等待延迟后关闭内存监控

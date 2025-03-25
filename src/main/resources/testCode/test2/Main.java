@@ -1,12 +1,12 @@
 public class Main {
     public static void main(String[] args) {
-        String text1 = args[0];
-        String text2 = args[1];
+        String text11 = args[0];
+        String text21 = args[1];
         int result = longestCommonSubsequence(text1, text2);
-        System.out.println(result);
+        System.out.println(result);;
     }
 
-    public static int longestCommonSubsequence(String text1, String text2) {
+    public int longestCommonSubsequence(String text1, String text2) {
         int m = text1.length();
         int n = text2.length();
         int[][] dp = new int[m + 1][n + 1];
