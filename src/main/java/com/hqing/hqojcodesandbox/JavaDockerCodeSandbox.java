@@ -19,6 +19,7 @@ import org.springframework.util.StopWatch;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -72,10 +73,10 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
             System.out.println("编译结束, 耗时: " + executeMessage.getTime());
             String errorMessage = executeMessage.getErrorMessage();
             if (StrUtil.isNotBlank(errorMessage)) {
-                return getErrorResponse(new Throwable(errorMessage));
+                return getErrorResponse(new Throwable(errorMessage), userCodeFile, userCodeParentPath);
             }
         } catch (Exception e) {
-            return getErrorResponse(e);
+            return getErrorResponse(e, userCodeFile, userCodeParentPath);
         }
 
         //3. 创建Docker容器, 运行Java代码
@@ -136,7 +137,7 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
                 @Override
                 public void onNext(Statistics statistics) {
                     Long memory = statistics.getMemoryStats().getUsage();
-                    if (memory > maxMemory[0]) {
+                    if (memory != null && memory > maxMemory[0]) {
                         maxMemory[0] = memory;
                         System.out.println("[内存监控] 更新峰值: " + NumberUtil.div(maxMemory[0], 1024.0 * 1024.0, 1) + " MB");
                     }
@@ -149,16 +150,17 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
                 //设置命令参数, 把命令按照空格拆分，作为一个数组传递
                 String[] inputArgsArray = inputArgs.split(" ");
                 String[] cmdArray = ArrayUtil.append(new String[]{"java", "-cp", "/app", "Main"}, inputArgsArray);
-                //创建Cmd执行对象
+                //创建Cmd执行对象, 开启输入输出流
                 ExecCreateCmdResponse execCreateCmdResponse = dockerClient.execCreateCmd(containerId)
                         .withCmd(cmdArray)
                         .withAttachStderr(true)
                         .withAttachStdin(true)
                         .withAttachStdout(true)
                         .exec();
-                System.out.println("执行命令: " + execCreateCmdResponse);
+                System.out.println("执行命令: " + Arrays.toString(cmdArray));
                 String execId = execCreateCmdResponse.getId();
 
+                //收集输出信息
                 ExecuteMessage executeMessage = new ExecuteMessage();
                 final StringBuilder messageBuilder = new StringBuilder();
                 final StringBuilder errMessageBuilder = new StringBuilder();
@@ -167,12 +169,14 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
                 ResultCallback.Adapter<Frame> execStartResultCallback = new ResultCallback.Adapter<Frame>() {
                     @Override
                     public void onNext(Frame frame) {
+                        //判断输出流类型
                         StreamType streamType = frame.getStreamType();
                         String payload = new String(frame.getPayload(), StandardCharsets.UTF_8);
                         if (StreamType.STDOUT.equals(streamType)) {
                             messageBuilder.append(payload);
-                            System.out.println("输出结果: " + payload);
+                            System.out.println("输出正常结果: " + payload);
                         } else if (StreamType.STDERR.equals(streamType)) {
+                            //exitValue设置为出错
                             exitValue[0] = 1;
                             errMessageBuilder.append(payload);
                             System.err.println("输出错误结果: " + payload);
@@ -209,15 +213,15 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
                 }
             }
         } catch (Exception e) {
-            System.out.println("代码出现异常" + e.getMessage());
-            throw new RuntimeException(e);
+            System.out.println("容器执行出现异常" + e.getMessage());
+            return getErrorResponse(e, userCodeFile, userCodeParentPath);
         } finally {
             if (statsCmd != null) {
                 statsCmd.close();
             }
         }
 
-        //4.收集整理输出结果
+        //4.整理输出结果
         ExecuteCodeResponse executeCodeResponse = new ExecuteCodeResponse();
         List<String> outputList = new ArrayList<>();
 
@@ -266,7 +270,12 @@ public class JavaDockerCodeSandbox implements CodeSandbox {
      * @param e
      * @return
      */
-    private ExecuteCodeResponse getErrorResponse(Throwable e) {
+    private ExecuteCodeResponse getErrorResponse(Throwable e, File userCodeFile, String userCodeParentPath) {
+        //文件清理
+        if (userCodeFile.getParentFile() != null) {
+            boolean del = FileUtil.del(userCodeParentPath);
+            System.out.println("删除" + (del ? "成功" : "失败"));
+        }
         ExecuteCodeResponse executeCodeResponse = new ExecuteCodeResponse();
         executeCodeResponse.setOutputList(new ArrayList<>());
         executeCodeResponse.setMessage(e.getMessage());
