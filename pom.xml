@@ -41,9 +41,10 @@
             <artifactId>hutool-all</artifactId>
             <version>5.8.24</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java -->
         <dependency>
             <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java-core</artifactId>
+            <artifactId>docker-java</artifactId>
             <version>3.4.0</version>
         </dependency>
         <dependency>
@@ -82,7 +83,7 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.hqing.hqojcodesandbox.HqojCodeSandboxApplication</mainClass>
-                    <skip>true</skip>
+                    <skip>false</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -92,6 +93,15 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <!--在这里配置需要运行的main方法所在的类-->
+                    <mainClass>com.hqing.hqojcodesandbox.docker.DockerDemo</mainClass>
+                </configuration>
+                <version>3.0.0</version>
             </plugin>
         </plugins>
     </build>
