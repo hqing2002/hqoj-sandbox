@@ -1,7 +1,6 @@
 package com.hqing.hqojcodesandbox.controller;
 
 import cn.hutool.core.io.resource.ResourceUtil;
-import com.hqing.hqojcodesandbox.CodeSandBoxTest;
 import com.hqing.hqojcodesandbox.CodeSandbox;
 import com.hqing.hqojcodesandbox.JavaDockerCodeSandbox;
 import com.hqing.hqojcodesandbox.JavaNativeCodeSandbox;
@@ -27,7 +26,7 @@ public class MainController {
     public String healthCheck(@PathVariable("id1") String id1,
                               @PathVariable("id2") String id2,
                               @PathVariable("filePath") String filePath) {
-        CodeSandbox javaDockerCodeSandbox = new JavaNativeCodeSandbox();
+        CodeSandbox javaDockerCodeSandbox = new JavaDockerCodeSandbox();
         ExecuteCodeRequest executeCodeRequest = new ExecuteCodeRequest();
 
         //读取resource目录下的main.java用于测试
