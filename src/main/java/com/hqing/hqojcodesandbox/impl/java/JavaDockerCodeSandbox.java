@@ -10,6 +10,7 @@ import com.github.dockerjava.core.DockerClientBuilder;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import com.hqing.hqojcodesandbox.model.ExecuteMessage;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 import java.io.File;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
+@Component
 public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
     //定义程序最大运行时长(ms)和内存1G(字节),cpu核数
     private static final long MAX_TIME_LIMIT = 5000L;

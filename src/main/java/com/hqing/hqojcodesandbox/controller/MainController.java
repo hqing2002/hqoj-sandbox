@@ -1,17 +1,21 @@
 package com.hqing.hqojcodesandbox.controller;
 
-import cn.hutool.core.io.resource.ResourceUtil;
+import cn.hutool.core.collection.CollectionUtil;
+import com.hqing.hqojcodesandbox.common.BaseResponse;
+import com.hqing.hqojcodesandbox.common.ErrorCode;
+import com.hqing.hqojcodesandbox.common.ResultUtils;
+import com.hqing.hqojcodesandbox.exception.BusinessException;
 import com.hqing.hqojcodesandbox.impl.CodeSandbox;
-import com.hqing.hqojcodesandbox.impl.java.JavaDockerCodeSandbox;
+import com.hqing.hqojcodesandbox.impl.CodeSandboxFactory;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
+import java.util.List;
 
 /**
  * FileDescribe
@@ -20,22 +24,24 @@ import java.util.Collections;
  */
 @RestController("/")
 public class MainController {
+    @GetMapping("/health")
+    public BaseResponse<String> healthCheck() {
+        return ResultUtils.success("ok");
+    }
 
-    @GetMapping("/health/{id1}/{id2}/{filePath}")
-    public String healthCheck(@PathVariable("id1") String id1,
-                              @PathVariable("id2") String id2,
-                              @PathVariable("filePath") String filePath) {
-        CodeSandbox javaDockerCodeSandbox = new JavaDockerCodeSandbox();
-        ExecuteCodeRequest executeCodeRequest = new ExecuteCodeRequest();
-
-        //读取resource目录下的main.java用于测试
-        String path = "testCode" + File.separator + File.separator + filePath + File.separator + "Main.java";
-        String code = ResourceUtil.readStr(path, StandardCharsets.UTF_8);
-        executeCodeRequest.setInputList(Collections.singletonList(id1 + " " + id2));
-        executeCodeRequest.setCode(code);
-        executeCodeRequest.setLanguage("java");
-        ExecuteCodeResponse executeCodeResponse = javaDockerCodeSandbox.executeCode(executeCodeRequest);
-        System.out.println(executeCodeResponse);
-        return executeCodeResponse.toString();
+    @PostMapping("/executeCode")
+    public BaseResponse<ExecuteCodeResponse> executeCode(@RequestBody ExecuteCodeRequest executeCodeRequest) {
+        if (executeCodeRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        List<String> inputList = executeCodeRequest.getInputList();
+        String code = executeCodeRequest.getCode();
+        String language = executeCodeRequest.getLanguage();
+        if (StringUtils.isAnyBlank(code, language) || CollectionUtil.isEmpty(inputList)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        CodeSandbox codeSandbox = new CodeSandboxFactory().newInstance(language);
+        ExecuteCodeResponse executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
+        return ResultUtils.success(executeCodeResponse);
     }
 }
