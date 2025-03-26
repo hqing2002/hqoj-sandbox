@@ -1,7 +1,10 @@
 package com.hqing.hqojcodesandbox.controller;
 
 import cn.hutool.core.io.resource.ResourceUtil;
+import com.hqing.hqojcodesandbox.CodeSandBoxTest;
+import com.hqing.hqojcodesandbox.CodeSandbox;
 import com.hqing.hqojcodesandbox.JavaDockerCodeSandbox;
+import com.hqing.hqojcodesandbox.JavaNativeCodeSandbox;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +27,11 @@ public class MainController {
     public String healthCheck(@PathVariable("id1") String id1,
                               @PathVariable("id2") String id2,
                               @PathVariable("filePath") String filePath) {
-        JavaDockerCodeSandbox javaDockerCodeSandbox = new JavaDockerCodeSandbox();
+        CodeSandbox javaDockerCodeSandbox = new JavaNativeCodeSandbox();
         ExecuteCodeRequest executeCodeRequest = new ExecuteCodeRequest();
 
         //读取resource目录下的main.java用于测试
-        String path = "testCode" + File.separator + "unsafeCode" + File.separator + filePath + File.separator + "Main.java";
+        String path = "testCode" + File.separator + File.separator + filePath + File.separator + "Main.java";
         String code = ResourceUtil.readStr(path, StandardCharsets.UTF_8);
         executeCodeRequest.setInputList(Collections.singletonList(id1 + " " + id2));
         executeCodeRequest.setCode(code);
