@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -24,6 +25,9 @@ import java.util.List;
  */
 @RestController("/")
 public class MainController {
+    @Resource
+    private CodeSandboxFactory factory;
+
     @GetMapping("/health")
     public BaseResponse<String> healthCheck() {
         return ResultUtils.success("ok");
@@ -40,7 +44,7 @@ public class MainController {
         if (StringUtils.isAnyBlank(code, language) || CollectionUtil.isEmpty(inputList)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        CodeSandbox codeSandbox = new CodeSandboxFactory().newInstance(language);
+        CodeSandbox codeSandbox = factory.newInstance(language);
         ExecuteCodeResponse executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
         return ResultUtils.success(executeCodeResponse);
     }

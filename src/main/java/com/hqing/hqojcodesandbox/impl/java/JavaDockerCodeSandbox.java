@@ -178,12 +178,12 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                 executeMessage.setErrorMessage(errMessageBuilder.toString());
                 executeMessage.setExitValue(exitValue[0]);
                 executeMessage.setTime(time);
+                executeMessage.setMemory(maxMemory[0]);
                 executeMessageList.add(executeMessage);
             }
             //先关闭回调适配器（停止处理数据）, 等待延迟后关闭内存监控
             statsResultCallback.close();
             Thread.sleep(100);
-            memory = maxMemory[0];
             statsCmd.close();
 
             //删除容器

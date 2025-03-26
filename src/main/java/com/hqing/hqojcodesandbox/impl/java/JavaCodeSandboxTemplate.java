@@ -9,6 +9,7 @@ import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import com.hqing.hqojcodesandbox.model.ExecuteMessage;
 import com.hqing.hqojcodesandbox.utils.ProcessUtils;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -19,12 +20,12 @@ import java.util.List;
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
+@Resource
 public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
     //将全局用到的字符串(魔法值)都写成字符串常量, 便于维护
     private static final String GLOBAL_CODE_DIR_NAME = "tmpCode";
     private static final String GLOBAL_JAVA_CLASS_NAME = "Main.java";
     private static volatile Boolean GLOBAL_CODE_DIR_NOT_EXIST = true;
-    protected long memory = 0L;
 
     /**
      * 1.把用户代码保存为文件
@@ -103,9 +104,11 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
         ExecuteCodeResponse executeCodeResponse = new ExecuteCodeResponse();
         //取最大值判断是否超时
         long maxTime = 0L;
+        long maxMemory = 0L;
 
         for (ExecuteMessage executeMessage : executeMessageList) {
             Long time = executeMessage.getTime();
+            Long memory = executeMessage.getMemory();
             String message = executeMessage.getMessage();
             String errorMessage = executeMessage.getErrorMessage();
             Integer exitValue = executeMessage.getExitValue();
@@ -120,6 +123,9 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
             if (time != null) {
                 maxTime = Math.max(maxTime, time);
             }
+            if (memory != null) {
+                maxMemory = Math.max(maxMemory, memory);
+            }
         }
 
         //正常完成
@@ -128,8 +134,8 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
         }
         executeCodeResponse.setOutputList(outputList);
         executeCodeResponse.setTime(maxTime);
-        executeCodeResponse.setMemory(memory);
-        System.out.println("docker程序执行结束, 获取到的结果为: " + executeMessageList);
+        executeCodeResponse.setMemory(maxMemory);
+        System.out.println("docker程序执行结束");
         return executeCodeResponse;
     }
 

@@ -3,6 +3,7 @@ package com.hqing.hqojcodesandbox.impl;
 import com.hqing.hqojcodesandbox.impl.cpp.CppDockerCodeSandbox;
 import com.hqing.hqojcodesandbox.impl.go.GoDockerCodeSandbox;
 import com.hqing.hqojcodesandbox.impl.java.JavaDockerCodeSandbox;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
@@ -11,6 +12,7 @@ import javax.annotation.Resource;
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
+@Component
 public class CodeSandboxFactory {
     /**
      * 创造代码沙箱实例
