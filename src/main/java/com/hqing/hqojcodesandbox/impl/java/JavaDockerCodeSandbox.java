@@ -1,4 +1,4 @@
-package com.hqing.hqojcodesandbox;
+package com.hqing.hqojcodesandbox.impl.java;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.NumberUtil;

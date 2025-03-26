@@ -1,4 +1,4 @@
-package com.hqing.hqojcodesandbox;
+package com.hqing.hqojcodesandbox.impl.java;
 
 import cn.hutool.dfa.FoundWord;
 import cn.hutool.dfa.WordTree;
