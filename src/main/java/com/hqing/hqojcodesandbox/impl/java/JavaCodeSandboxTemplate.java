@@ -163,7 +163,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
         ExecuteCodeResponse executeCodeResponse = new ExecuteCodeResponse();
         executeCodeResponse.setOutputList(new ArrayList<>());
         String regex = "/home/.*?\\.java";
-        String filteredContent = e.getMessage().replaceAll(regex, "");
+        String filteredContent = e.getMessage().replaceAll(regex, "Main.java");
         executeCodeResponse.setMessage(filteredContent);
         //表示代码沙箱错误(编译错误)
         executeCodeResponse.setStatus(2);
