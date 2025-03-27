@@ -119,7 +119,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
                 executeCodeResponse.setStatus(3);
                 break;
             }
-            outputList.add(message);
+            outputList.add(message.trim());
             if (time != null) {
                 maxTime = Math.max(maxTime, time);
             }

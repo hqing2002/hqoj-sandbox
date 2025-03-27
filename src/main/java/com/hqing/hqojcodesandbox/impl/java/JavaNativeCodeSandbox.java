@@ -53,6 +53,7 @@ public class JavaNativeCodeSandbox extends JavaCodeSandboxTemplate {
                 }).start();
                 ExecuteMessage executeMessage = ProcessUtils.getProcessMessage(runProcess, "运行");
                 System.out.println(executeMessage);
+                executeMessage.setMemory(0L);
                 executeMessageList.add(executeMessage);
             } catch (Exception e) {
                 throw new Exception(e);

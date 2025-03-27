@@ -1,6 +1,7 @@
 package com.hqing.hqojcodesandbox.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.hqing.hqojcodesandbox.common.BaseResponse;
 import com.hqing.hqojcodesandbox.common.ErrorCode;
 import com.hqing.hqojcodesandbox.common.ResultUtils;
@@ -16,15 +17,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- * FileDescribe
+ * 代码沙箱Controller
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
 @RestController("/")
 public class MainController {
+    private static final String AUTH_REQUEST_HEADER = "auth";
+    private static final String AUTH_REQUEST_SECRET = "secretKey";
+
     @Resource
     private CodeSandboxFactory factory;
 
@@ -34,9 +39,13 @@ public class MainController {
     }
 
     @PostMapping("/executeCode")
-    public BaseResponse<ExecuteCodeResponse> executeCode(@RequestBody ExecuteCodeRequest executeCodeRequest) {
+    public BaseResponse<ExecuteCodeResponse> executeCode(@RequestBody ExecuteCodeRequest executeCodeRequest, HttpServletRequest httpServletRequest) {
         if (executeCodeRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        String secret = httpServletRequest.getHeader(AUTH_REQUEST_HEADER);
+        if(StrUtil.isBlank(secret) || !secret.equals(AUTH_REQUEST_SECRET)) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         List<String> inputList = executeCodeRequest.getInputList();
         String code = executeCodeRequest.getCode();
