@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
-    //定义程序最大运行时长(ms)和内存1G(字节),cpu核数
+    //定义程序最大运行时长(5000ms)和内存(1G),cpu核数
     private static final long MAX_TIME_LIMIT = 5000L;
     private static final long MAX_MEMORY_LIMIT = 1024 * 1024 * 1024;
     private static final long MAX_CPU_COUNT = 1;
@@ -37,8 +37,10 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
 
     @Override
     protected List<ExecuteMessage> runCodeFile(File userCodeFile, List<String> inputList) throws Exception {
-        //3. 创建Docker容器, 运行Java代码
+        //创建Docker容器, 运行Java代码
         StatsCmd statsCmd = null;
+
+        //获取代码文件目录
         String userCodeParentPath = userCodeFile.getParentFile().getAbsolutePath();
         List<ExecuteMessage> executeMessageList = new ArrayList<>();
         final long[] maxMemory = {0L};
@@ -95,12 +97,13 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
             //启动容器
             dockerClient.startContainerCmd(containerId).exec();
 
-            //获取占用内存
+            //创建容器状态监控, 编写回调函数, 回调函数会按照固定时间执行
             statsCmd = dockerClient.statsCmd(containerId);
             ResultCallback.Adapter<Statistics> statsResultCallback = new ResultCallback.Adapter<Statistics>() {
                 @Override
                 public void onNext(Statistics statistics) {
                     super.onNext(statistics);
+                    //获取容器当前内存占用
                     Long memory = statistics.getMemoryStats().getUsage();
                     if (memory != null && memory > maxMemory[0]) {
                         maxMemory[0] = memory;
@@ -110,7 +113,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
             };
             //开启内存监控
             statsCmd.exec(statsResultCallback);
-            //执行命令docker exec containerName java -cp /app Main 1 2
+            //执行命令docker exec containerName java -cp /app Main args
             for (String inputArgs : inputList) {
                 //设置命令参数, 把命令按照空格拆分，作为一个数组传递
                 String[] inputArgsArray = inputArgs.split(" ");
@@ -131,7 +134,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                 final StringBuilder errMessageBuilder = new StringBuilder();
                 final int[] exitValue = {0};
                 final boolean[] timeOut = {true};
-                //启动Cmd执行对象, 编写回调函数
+                //启动容器Cmd执行对象, 编写回调函数
                 ResultCallback.Adapter<Frame> execStartResultCallback = new ResultCallback.Adapter<Frame>() {
                     @Override
                     public void onNext(Frame frame) {

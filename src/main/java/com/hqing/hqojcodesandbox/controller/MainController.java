@@ -1,6 +1,5 @@
 package com.hqing.hqojcodesandbox.controller;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.hqing.hqojcodesandbox.common.BaseResponse;
 import com.hqing.hqojcodesandbox.common.ErrorCode;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * 代码沙箱Controller
@@ -47,7 +45,6 @@ public class MainController {
         if(StrUtil.isBlank(secret) || !secret.equals(AUTH_REQUEST_SECRET)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
-        List<String> inputList = executeCodeRequest.getInputList();
         String code = executeCodeRequest.getCode();
         String language = executeCodeRequest.getLanguage();
         if (StringUtils.isAnyBlank(code, language)) {
