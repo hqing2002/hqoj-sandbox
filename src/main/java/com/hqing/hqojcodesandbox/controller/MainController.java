@@ -50,7 +50,7 @@ public class MainController {
         List<String> inputList = executeCodeRequest.getInputList();
         String code = executeCodeRequest.getCode();
         String language = executeCodeRequest.getLanguage();
-        if (StringUtils.isAnyBlank(code, language) || CollectionUtil.isEmpty(inputList)) {
+        if (StringUtils.isAnyBlank(code, language)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         CodeSandbox codeSandbox = factory.newInstance(language);

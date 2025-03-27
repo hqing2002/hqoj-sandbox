@@ -162,7 +162,9 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
     protected ExecuteCodeResponse getErrorResponse(Throwable e) {
         ExecuteCodeResponse executeCodeResponse = new ExecuteCodeResponse();
         executeCodeResponse.setOutputList(new ArrayList<>());
-        executeCodeResponse.setMessage(e.getMessage());
+        String regex = "/home/.*?\\.java";
+        String filteredContent = e.getMessage().replaceAll(regex, "");
+        executeCodeResponse.setMessage(filteredContent);
         //表示代码沙箱错误(编译错误)
         executeCodeResponse.setStatus(2);
         return executeCodeResponse;
