@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 代码沙箱Controller
@@ -44,7 +46,7 @@ public class MainController {
         }
         String secret = httpServletRequest.getHeader(AUTH_REQUEST_HEADER);
         //权限校验
-        if(StrUtil.isBlank(secret) || !secret.equals(AUTH_REQUEST_SECRET)) {
+        if (StrUtil.isBlank(secret) || !secret.equals(AUTH_REQUEST_SECRET)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         //参数校验
@@ -53,6 +55,13 @@ public class MainController {
         if (StringUtils.isAnyBlank(code, language)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        //如果用户的代码不需要输入, 这里可以设置一个空字符串列表保证代码可以执行一次
+        List<String> inputList = executeCodeRequest.getInputList();
+        if (inputList == null || inputList.isEmpty()) {
+            inputList = Collections.singletonList("");
+        }
+        executeCodeRequest.setInputList(inputList);
+
         //沙箱工厂调用沙箱实现类
         CodeSandbox codeSandbox = factory.newInstance(language);
         ExecuteCodeResponse executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);

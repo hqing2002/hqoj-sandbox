@@ -3,7 +3,8 @@ public class Main {
         String text11 = args[0];
         String text21 = args[1];
         int result = longestCommonSubsequence(text1, text2);
-        System.out.println(result);;
+        System.out.println(result);
+        ;
     }
 
     public int longestCommonSubsequence(String text1, String text2) {
