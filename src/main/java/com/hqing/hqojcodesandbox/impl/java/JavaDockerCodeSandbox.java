@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -164,7 +165,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                 //开启定时器统计时间
                 StopWatch stopWatch = new StopWatch();
                 stopWatch.start();
-                //执行命令并阻塞等待结束
+                //执行cmd命令并阻塞等待结束, 同时限定该条命令最大执行时间, 超时直接退出
                 dockerClient.execStartCmd(execId)
                         .exec(execStartResultCallback)
                         .awaitCompletion(MAX_TIME_LIMIT, TimeUnit.MILLISECONDS);
@@ -172,9 +173,9 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                 stopWatch.stop();
                 long time = stopWatch.getLastTaskTimeMillis();
 
-                //如果程序超出我们设定的最大运行时间, 则直接将时间设置为最大值
+                //如果程序超出我们设定的最大运行时间, 则直接将时间给一个随机数
                 if (timeOut[0]) {
-                    time = Long.MAX_VALUE;
+                    time = ThreadLocalRandom.current().nextInt(2_000_000, 4_000_001);
                 }
                 //填充本次运行的信息
                 executeMessage.setMessage(messageBuilder.toString());
