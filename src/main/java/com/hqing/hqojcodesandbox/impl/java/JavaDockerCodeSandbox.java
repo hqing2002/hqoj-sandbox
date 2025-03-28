@@ -10,6 +10,7 @@ import com.github.dockerjava.core.DockerClientBuilder;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import com.hqing.hqojcodesandbox.model.ExecuteMessage;
+import com.hqing.hqojcodesandbox.utils.RegularUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
@@ -117,7 +118,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
             //执行命令docker exec containerName java -cp /app Main args
             for (String inputArgs : inputList) {
                 //设置命令参数, 把命令按照空格拆分，作为一个数组传递
-                String[] inputArgsArray = inputArgs.split(" ");
+                String[] inputArgsArray = RegularUtils.parseArguments(inputArgs);
                 String[] cmdArray = ArrayUtil.append(new String[]{"java", "-cp", "/app", "Main"}, inputArgsArray);
                 //创建Cmd执行对象, 开启输入输出流
                 ExecCreateCmdResponse execCreateCmdResponse = dockerClient.execCreateCmd(containerId)
