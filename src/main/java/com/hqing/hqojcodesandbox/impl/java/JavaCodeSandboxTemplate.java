@@ -181,10 +181,10 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
             //2. 编译用户代码, 得到class文件
             ExecuteMessage compileExecuteMessage = compileCodeFile(userCodeFile);
 
-            //3. 运行代码
+            //3. 运行代码, 得到代码用例运行结果
             List<ExecuteMessage> executeMessageList = runCodeFile(userCodeFile, inputList);
 
-            //4.整理输出结果
+            //4.整理输出结果, 将运行结果列表封装成沙箱响应
             return getOutPutResponse(executeMessageList);
         } catch (Exception e) {
             return getErrorResponse(e);

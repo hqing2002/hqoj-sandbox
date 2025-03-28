@@ -3,6 +3,7 @@ package com.hqing.hqojcodesandbox.impl;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import com.hqing.hqojcodesandbox.model.SandboxResponseStatusEnum;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
@@ -11,6 +12,7 @@ import java.util.ArrayList;
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
+@Component
 public class DefaultCodeSandbox implements CodeSandbox {
     @Override
     public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {
