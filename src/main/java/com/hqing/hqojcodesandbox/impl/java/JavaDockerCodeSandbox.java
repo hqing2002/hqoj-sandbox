@@ -134,7 +134,6 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                 final StringBuilder messageBuilder = new StringBuilder();
                 final StringBuilder errMessageBuilder = new StringBuilder();
                 final int[] exitValue = {0};
-                final boolean[] timeOut = {true};
                 //启动容器Cmd执行对象, 编写回调函数
                 ResultCallback.Adapter<Frame> execStartResultCallback = new ResultCallback.Adapter<Frame>() {
                     @Override
@@ -155,18 +154,12 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                             System.out.println("其他错误类型: " + new String(frame.getPayload()));
                         }
                     }
-
-                    @Override
-                    public void onComplete() {
-                        timeOut[0] = false;
-                        super.onComplete();
-                    }
                 };
                 //开启定时器统计时间
                 StopWatch stopWatch = new StopWatch();
                 stopWatch.start();
-                //执行cmd命令并阻塞等待结束, 同时限定该条命令最大执行时间, 超时直接退出
-                dockerClient.execStartCmd(execId)
+                //执行cmd命令并阻塞等待结束, 同时限定该条命令最大执行时间, 超时返回false
+                boolean notTimeout = dockerClient.execStartCmd(execId)
                         .exec(execStartResultCallback)
                         .awaitCompletion(MAX_TIME_LIMIT, TimeUnit.MILLISECONDS);
                 //关闭定时器
@@ -174,7 +167,7 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
                 long time = stopWatch.getLastTaskTimeMillis();
 
                 //如果程序超出我们设定的最大运行时间, 则直接将时间给一个随机数
-                if (timeOut[0]) {
+                if (!notTimeout) {
                     time = ThreadLocalRandom.current().nextInt(2_000_000, 4_000_001);
                 }
                 //填充本次运行的信息
