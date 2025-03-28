@@ -29,15 +29,19 @@ public class CodeSandboxFactory {
     @Resource
     private GoDockerCodeSandbox goDockerCodeSandbox;
 
+    @Resource
+    private DefaultCodeSandbox defaultCodeSandbox;
+
     public CodeSandbox newInstance(String type) {
         switch (type) {
+            case "java":
+                return javaDockerCodeSandbox;
             case "cpp":
                 return cppDockerCodeSandbox;
             case "go":
                 return goDockerCodeSandbox;
-            case "java":
             default:
-                return javaDockerCodeSandbox;
+                return defaultCodeSandbox;
         }
     }
 }
