@@ -28,9 +28,9 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
-    //定义程序最大运行时长(5000ms)和内存(1G),cpu核数
+    //定义程序最大运行时长(5000ms)和内存(256M),cpu核数
     private static final long MAX_TIME_LIMIT = 5000L;
-    private static final long MAX_MEMORY_LIMIT = 1024 * 1024 * 1024;
+    private static final long MAX_MEMORY_LIMIT = 256 * 1024 * 1024;
     private static final long MAX_CPU_COUNT = 1;
 
     //判断是否第一次拉取镜像
