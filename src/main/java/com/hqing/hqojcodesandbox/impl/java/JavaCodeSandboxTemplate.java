@@ -131,6 +131,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
 
         //正常完成
         if (outputList.size() == executeMessageList.size()) {
+            executeCodeResponse.setMessage("ok");
             executeCodeResponse.setStatus(SandboxResponseStatusEnum.ACCEPT.getValue());
         }
         executeCodeResponse.setOutputList(outputList);
@@ -168,6 +169,8 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
         executeCodeResponse.setMessage(filteredContent);
         //表示代码沙箱错误(编译错误)
         executeCodeResponse.setStatus(SandboxResponseStatusEnum.COMPILE_ERROR.getValue());
+        executeCodeResponse.setTime(0L);
+        executeCodeResponse.setMemory(0L);
         return executeCodeResponse;
     }
 
