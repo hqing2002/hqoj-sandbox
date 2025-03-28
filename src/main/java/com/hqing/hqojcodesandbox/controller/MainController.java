@@ -38,19 +38,22 @@ public class MainController {
 
     @PostMapping("/executeCode")
     public BaseResponse<ExecuteCodeResponse> executeCode(@RequestBody ExecuteCodeRequest executeCodeRequest, HttpServletRequest httpServletRequest) {
+        //传入参数异常
         if (executeCodeRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         String secret = httpServletRequest.getHeader(AUTH_REQUEST_HEADER);
-        //传入参数异常
+        //权限校验
         if(StrUtil.isBlank(secret) || !secret.equals(AUTH_REQUEST_SECRET)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
+        //参数校验
         String code = executeCodeRequest.getCode();
         String language = executeCodeRequest.getLanguage();
         if (StringUtils.isAnyBlank(code, language)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        //沙箱工厂调用沙箱实现类
         CodeSandbox codeSandbox = factory.newInstance(language);
         ExecuteCodeResponse executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
         return ResultUtils.success(executeCodeResponse);
