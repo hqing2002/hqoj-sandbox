@@ -42,6 +42,7 @@ public class MainController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         String secret = httpServletRequest.getHeader(AUTH_REQUEST_HEADER);
+        //传入参数异常
         if(StrUtil.isBlank(secret) || !secret.equals(AUTH_REQUEST_SECRET)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }

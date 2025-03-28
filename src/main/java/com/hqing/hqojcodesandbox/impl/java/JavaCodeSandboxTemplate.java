@@ -7,6 +7,7 @@ import com.hqing.hqojcodesandbox.impl.CodeSandbox;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import com.hqing.hqojcodesandbox.model.ExecuteMessage;
+import com.hqing.hqojcodesandbox.model.SandboxResponseStatusEnum;
 import com.hqing.hqojcodesandbox.utils.ProcessUtils;
 
 import javax.annotation.Resource;
@@ -116,7 +117,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
             //如果运行中有报错
             if (exitValue != 0 || StrUtil.isNotBlank(errorMessage)) {
                 executeCodeResponse.setMessage(errorMessage);
-                executeCodeResponse.setStatus(3);
+                executeCodeResponse.setStatus(SandboxResponseStatusEnum.RUNTIME_ERROR.getValue());
                 break;
             }
             outputList.add(message.trim());
@@ -130,7 +131,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
 
         //正常完成
         if (outputList.size() == executeMessageList.size()) {
-            executeCodeResponse.setStatus(1);
+            executeCodeResponse.setStatus(SandboxResponseStatusEnum.ACCEPT.getValue());
         }
         executeCodeResponse.setOutputList(outputList);
         executeCodeResponse.setTime(maxTime);
@@ -166,7 +167,7 @@ public abstract class JavaCodeSandboxTemplate implements CodeSandbox {
         String filteredContent = e.getMessage().replaceAll(regex, "Main.java");
         executeCodeResponse.setMessage(filteredContent);
         //表示代码沙箱错误(编译错误)
-        executeCodeResponse.setStatus(2);
+        executeCodeResponse.setStatus(SandboxResponseStatusEnum.COMPILE_ERROR.getValue());
         return executeCodeResponse;
     }
 
