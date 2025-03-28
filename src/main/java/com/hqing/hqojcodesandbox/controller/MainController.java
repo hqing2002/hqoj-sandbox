@@ -76,12 +76,12 @@ public class MainController {
         CodeSandbox codeSandbox = factory.newInstance(language);
         ExecuteCodeResponse executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
         //截取前三个输出元素
-        List<String> outputList = ListUtil.sub(executeCodeResponse.getOutputList(), 0, 3);
+        List<String> outputList = ListUtil.sub(executeCodeResponse.getOutputList(), 0, 10);
         String message = executeCodeResponse.getMessage();
         Integer status = executeCodeResponse.getStatus();
         Long time = executeCodeResponse.getTime();
         Long memory = executeCodeResponse.getMemory();
-        log.info("\n调用完成, 输出结果:{}\n信息: {}\n调用状态: {}\n时间消耗: {}\n内存消耗: {}\n{}",
+        log.info("\n调用完成, 前十个输出结果:{}\n信息: {}\n调用状态: {}\n时间消耗: {}\n内存消耗: {}\n{}",
                 outputList, message, status, time, memory, separators);
         return ResultUtils.success(executeCodeResponse);
     }
