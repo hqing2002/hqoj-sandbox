@@ -1,5 +1,6 @@
 package com.hqing.hqojcodesandbox.controller;
 
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import com.hqing.hqojcodesandbox.common.BaseResponse;
 import com.hqing.hqojcodesandbox.common.ErrorCode;
@@ -68,6 +69,14 @@ public class MainController {
         //沙箱工厂调用沙箱实现类
         CodeSandbox codeSandbox = factory.newInstance(language);
         ExecuteCodeResponse executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
+        //截取前三个输出元素
+        List<String> outputList = ListUtil.sub(executeCodeResponse.getOutputList(), 0, 3);
+        String message = executeCodeResponse.getMessage();
+        Integer status = executeCodeResponse.getStatus();
+        Long time = executeCodeResponse.getTime();
+        Long memory = executeCodeResponse.getMemory();
+        log.info("调用完成, 输出结果:{}\n 信息: {}\n, 调用状态: {}\n, 时间消耗: {}\n, 内存消耗: {}\n",
+                outputList, message, status, time, memory);
         return ResultUtils.success(executeCodeResponse);
     }
 }
