@@ -61,7 +61,12 @@ public class MainController {
         //如果用户的代码不需要输入, 这里可以设置一个空字符串列表保证代码可以执行一次
         List<String> inputList = executeCodeRequest.getInputList();
         if (inputList == null || inputList.isEmpty()) {
-            inputList = Collections.singletonList("0");
+            inputList = Collections.singletonList("");
+        }
+        for (int i = 0; i < inputList.size(); i++) {
+            if(StrUtil.isBlank(inputList.get(i))) {
+                inputList.set(i, "");
+            }
         }
         executeCodeRequest.setInputList(inputList);
         String separators = "###############################################################";
