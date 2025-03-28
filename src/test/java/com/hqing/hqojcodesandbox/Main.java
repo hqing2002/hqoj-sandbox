@@ -1,6 +1,7 @@
 package com.hqing.hqojcodesandbox;
 
 import cn.hutool.core.collection.ListUtil;
+import com.hqing.hqojcodesandbox.utils.RegularUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +14,11 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class Main {
     public static void main(String[] args) {
-        List<String> list = new ArrayList<>();
-        list.add("123");
-        list.add("123");
-        List<String> sub = ListUtil.sub(list, 1, 10);
-        System.out.println(sub);
+        String s = "\"\"";
+        String[] strings = RegularUtils.parseArguments(s);
+        System.out.println(strings.length);
+        for (String string : strings) {
+            System.out.println(string);
+        }
     }
 }
