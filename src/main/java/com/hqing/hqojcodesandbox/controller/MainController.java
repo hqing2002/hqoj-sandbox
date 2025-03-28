@@ -64,7 +64,8 @@ public class MainController {
             inputList = Collections.singletonList("0");
         }
         executeCodeRequest.setInputList(inputList);
-        log.info("用户提交代码, 语言:{}\n 代码{}\n", language, code);
+        String separators = "###############################################################";
+        log.info("\n{}\n用户提交代码, 语言:{}\n{}", separators, language, code);
 
         //沙箱工厂调用沙箱实现类
         CodeSandbox codeSandbox = factory.newInstance(language);
@@ -75,8 +76,8 @@ public class MainController {
         Integer status = executeCodeResponse.getStatus();
         Long time = executeCodeResponse.getTime();
         Long memory = executeCodeResponse.getMemory();
-        log.info("调用完成, 输出结果:{}\n 信息: {}\n, 调用状态: {}\n, 时间消耗: {}\n, 内存消耗: {}\n",
-                outputList, message, status, time, memory);
+        log.info("\n调用完成, 输出结果:{}\n信息: {}\n调用状态: {}\n时间消耗: {}\n内存消耗: {}\n{}",
+                outputList, message, status, time, memory, separators);
         return ResultUtils.success(executeCodeResponse);
     }
 }
