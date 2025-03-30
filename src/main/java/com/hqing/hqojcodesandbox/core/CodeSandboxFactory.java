@@ -1,7 +1,7 @@
 package com.hqing.hqojcodesandbox.core;
 
 import com.hqing.hqojcodesandbox.core.cpp.CppCodeSandbox;
-import com.hqing.hqojcodesandbox.core.go.GoDockerCodeSandbox;
+import com.hqing.hqojcodesandbox.core.go.GoCodeSandbox;
 import com.hqing.hqojcodesandbox.core.java.JavaCodeSandbox;
 import com.hqing.hqojcodesandbox.core.java.JavaNativeCodeSandbox;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ public class CodeSandboxFactory {
     private CppCodeSandbox cppCodeSandbox;
 
     @Resource
-    private GoDockerCodeSandbox goDockerCodeSandbox;
+    private GoCodeSandbox goCodeSandbox;
 
     @Resource
     private DefaultCodeSandbox defaultCodeSandbox;
@@ -42,7 +42,7 @@ public class CodeSandboxFactory {
             case "cpp":
                 return cppCodeSandbox;
             case "go":
-                return goDockerCodeSandbox;
+                return goCodeSandbox;
             default:
                 return defaultCodeSandbox;
         }

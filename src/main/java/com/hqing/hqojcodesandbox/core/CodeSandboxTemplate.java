@@ -1,5 +1,6 @@
 package com.hqing.hqojcodesandbox.core;
 
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
@@ -12,6 +13,7 @@ import com.hqing.hqojcodesandbox.strategy.RunStrategyManager;
 import com.hqing.hqojcodesandbox.strategy.model.RunCodeContext;
 import com.hqing.hqojcodesandbox.strategy.model.RunCodeStrategyEnum;
 import com.hqing.hqojcodesandbox.utils.ProcessUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -170,7 +172,7 @@ public abstract class CodeSandboxTemplate implements CodeSandbox {
 
         //正常完成
         if (outputList.size() == executeMessageList.size()) {
-            executeCodeResponse.setMessage("ok");
+            executeCodeResponse.setMessage(StringUtils.join(outputList, ", "));
             executeCodeResponse.setStatus(SandboxResponseStatusEnum.ACCEPT.getValue());
         }
         executeCodeResponse.setOutputList(outputList);
