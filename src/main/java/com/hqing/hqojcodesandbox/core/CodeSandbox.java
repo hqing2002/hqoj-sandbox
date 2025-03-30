@@ -5,7 +5,7 @@ import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 
 /**
- * 代码沙箱调用
+ * 代码沙箱调用接口
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */

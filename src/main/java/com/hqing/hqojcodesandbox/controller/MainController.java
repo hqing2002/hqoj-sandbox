@@ -5,9 +5,9 @@ import cn.hutool.core.util.StrUtil;
 import com.hqing.hqojcodesandbox.common.BaseResponse;
 import com.hqing.hqojcodesandbox.common.ErrorCode;
 import com.hqing.hqojcodesandbox.common.ResultUtils;
-import com.hqing.hqojcodesandbox.exception.BusinessException;
 import com.hqing.hqojcodesandbox.core.CodeSandbox;
 import com.hqing.hqojcodesandbox.core.CodeSandboxFactory;
+import com.hqing.hqojcodesandbox.exception.BusinessException;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +65,7 @@ public class MainController {
             inputList = new ArrayList<>(Collections.singletonList(""));
         }
         for (int i = 0; i < inputList.size(); i++) {
-            if(StrUtil.isBlank(inputList.get(i))) {
+            if (StrUtil.isBlank(inputList.get(i))) {
                 inputList.set(i, "");
             }
         }

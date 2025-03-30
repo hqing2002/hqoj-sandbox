@@ -1,6 +1,5 @@
 package com.hqing.hqojcodesandbox.core;
 
-import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
@@ -13,7 +12,6 @@ import com.hqing.hqojcodesandbox.strategy.RunStrategyManager;
 import com.hqing.hqojcodesandbox.strategy.model.RunCodeContext;
 import com.hqing.hqojcodesandbox.strategy.model.RunCodeStrategyEnum;
 import com.hqing.hqojcodesandbox.utils.ProcessUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -22,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 代码沙箱模板
+ * 代码沙箱模板(抽离核心流程)
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
@@ -178,11 +176,11 @@ public abstract class CodeSandboxTemplate implements CodeSandbox {
             //将输出信息拼接后设置到message中
             StringBuilder message = new StringBuilder();
             for (String output : outputList) {
-                if(StrUtil.isNotBlank(output)) {
+                if (StrUtil.isNotBlank(output)) {
                     message.append(output);
                 }
             }
-            if(message.length() == 0) {
+            if (message.length() == 0) {
                 message.append("暂无输出");
             }
             executeCodeResponse.setMessage(message.toString());
