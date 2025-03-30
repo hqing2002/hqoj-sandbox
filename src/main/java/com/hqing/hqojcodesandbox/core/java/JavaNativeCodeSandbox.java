@@ -38,6 +38,14 @@ public class JavaNativeCodeSandbox  extends JavaCodeSandbox {
     }
 
     @Override
+    protected RunCodeContext buildContext(File userCodeFile, List<String> inputList) {
+        RunCodeContext runCodeContext = super.buildContext(userCodeFile, inputList);
+        String userCodeParentPath = userCodeFile.getParentFile().getAbsolutePath();
+        runCodeContext.setRunCmd(new String[]{"java", "-cp", userCodeParentPath, "Main"});
+        return runCodeContext;
+    }
+
+    @Override
     public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {
         //Java原生实现先校验字典树
         String code = executeCodeRequest.getCode();
