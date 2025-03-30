@@ -103,16 +103,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <configuration>
-                    <!--在这里配置需要运行的main方法所在的类-->
-                    <mainClass>com.hqing.hqojcodesandbox.docker.DockerDemo</mainClass>
-                    <mainClass>com.hqing.hqojcodesandbox.impl.java.JavaDockerCodeSandbox</mainClass>
-                </configuration>
-                <version>3.0.0</version>
-            </plugin>
         </plugins>
     </build>
 

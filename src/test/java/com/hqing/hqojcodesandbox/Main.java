@@ -1,18 +1,12 @@
 package com.hqing.hqojcodesandbox;
 
-import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.UUID;
-import com.hqing.hqojcodesandbox.impl.java.JavaCodeSandboxTemplate;
-import com.hqing.hqojcodesandbox.utils.RegularUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * FileDescribe
