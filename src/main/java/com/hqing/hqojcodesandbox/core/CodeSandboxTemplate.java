@@ -144,10 +144,11 @@ public abstract class CodeSandboxTemplate implements CodeSandbox {
     protected ExecuteCodeResponse getOutPutResponse(List<ExecuteMessage> executeMessageList) {
         List<String> outputList = new ArrayList<>();
         ExecuteCodeResponse executeCodeResponse = new ExecuteCodeResponse();
-        //取最大值判断是否超时
+        //程序运行时间和内存取所有用例最大值
         long maxTime = 0L;
         long maxMemory = 0L;
 
+        //遍历输出信息列表
         for (ExecuteMessage executeMessage : executeMessageList) {
             Long time = executeMessage.getTime();
             Long memory = executeMessage.getMemory();
@@ -155,13 +156,15 @@ public abstract class CodeSandboxTemplate implements CodeSandbox {
             String errorMessage = executeMessage.getErrorMessage();
             Integer exitValue = executeMessage.getExitValue();
 
-            //如果运行中有报错
+            //如果运行中有报错, 直接设置信息为异常信息, 设置状态为运行时异常, 退出循环
             if (exitValue != 0 || StrUtil.isNotBlank(errorMessage)) {
                 executeCodeResponse.setMessage(errorMessage);
                 executeCodeResponse.setStatus(SandboxResponseStatusEnum.RUNTIME_ERROR.getValue());
                 break;
             }
+            //将行尾的空格和换行符删除
             outputList.add(message.trim());
+            //获取最大时间和内存
             if (time != null) {
                 maxTime = Math.max(maxTime, time);
             }
@@ -172,7 +175,18 @@ public abstract class CodeSandboxTemplate implements CodeSandbox {
 
         //正常完成
         if (outputList.size() == executeMessageList.size()) {
-            executeCodeResponse.setMessage(StringUtils.join(outputList, ", "));
+            //将输出信息拼接后设置到message中
+            StringBuilder message = new StringBuilder();
+            for (String output : outputList) {
+                if(StrUtil.isNotBlank(output)) {
+                    message.append(output);
+                }
+            }
+            if(message.length() == 0) {
+                message.append("暂无输出");
+            }
+            executeCodeResponse.setMessage(message.toString());
+            //设置状态为AC
             executeCodeResponse.setStatus(SandboxResponseStatusEnum.ACCEPT.getValue());
         }
         executeCodeResponse.setOutputList(outputList);
