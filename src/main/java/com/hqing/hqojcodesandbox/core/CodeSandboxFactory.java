@@ -15,14 +15,11 @@ import javax.annotation.Resource;
  */
 @Component
 public class CodeSandboxFactory {
-    /**
-     * 创造代码沙箱实例
-     *
-     * @param type 沙箱类型
-     * @return
-     */
     @Resource
     private JavaCodeSandbox javaCodeSandbox;
+
+    @Resource
+    private JavaNativeCodeSandbox javaNativeCodeSandbox;
 
     @Resource
     private CppCodeSandbox cppCodeSandbox;
@@ -33,9 +30,9 @@ public class CodeSandboxFactory {
     @Resource
     private DefaultCodeSandbox defaultCodeSandbox;
 
-    @Resource
-    private JavaNativeCodeSandbox javaNativeCodeSandbox;
-
+    /**
+     * 创造代码沙箱实例
+     */
     public CodeSandbox newInstance(String type) {
         switch (type) {
             case "java":

@@ -13,8 +13,8 @@ public interface CodeSandbox {
     /**
      * 代码沙箱判题
      *
-     * @param executeCodeRequest
-     * @return
+     * @param executeCodeRequest 请求信息
+     * @return 执行结果
      */
     ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest);
 }

@@ -48,8 +48,8 @@ public class MainController {
         if (executeCodeRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        String secret = httpServletRequest.getHeader(AUTH_REQUEST_HEADER);
         //权限校验
+        String secret = httpServletRequest.getHeader(AUTH_REQUEST_HEADER);
         if (StrUtil.isBlank(secret) || !secret.equals(AUTH_REQUEST_SECRET)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
@@ -70,13 +70,13 @@ public class MainController {
             }
         }
         executeCodeRequest.setInputList(inputList);
+        //日志打印
         String separators = "###############################################################";
         log.info("\n{}\n用户提交代码, 语言:{}\n{}", separators, language, code);
-
         //沙箱工厂调用沙箱实现类
         CodeSandbox codeSandbox = factory.newInstance(language);
         ExecuteCodeResponse executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
-        //截取前三个输出元素
+        //截取前几个输出元素
         List<String> outputList = ListUtil.sub(executeCodeResponse.getOutputList(), 0, 10);
         String message = executeCodeResponse.getMessage();
         Integer status = executeCodeResponse.getStatus();
