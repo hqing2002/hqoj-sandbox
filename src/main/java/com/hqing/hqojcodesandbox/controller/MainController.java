@@ -56,6 +56,8 @@ public class MainController {
         //参数校验
         String code = executeCodeRequest.getCode();
         String language = executeCodeRequest.getLanguage();
+        //todo 测试, 设置用Java原生
+        language = "java-native";
         if (StringUtils.isAnyBlank(code, language)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

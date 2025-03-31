@@ -2,6 +2,7 @@ package com.hqing.hqojcodesandbox.core.java;
 
 import cn.hutool.dfa.FoundWord;
 import cn.hutool.dfa.WordTree;
+import com.hqing.hqojcodesandbox.core.CodeSandboxTemplate;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import com.hqing.hqojcodesandbox.strategy.model.RunCodeContext;
@@ -17,9 +18,11 @@ import java.util.List;
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
 @Component
-public class JavaNativeCodeSandbox extends JavaCodeSandbox {
+public class JavaNativeCodeSandbox extends CodeSandboxTemplate {
     //定义字典树存储黑名单
     private static final WordTree BLACK_KEY_LIST;
+
+    private static final String CODE_FILE_NAME = "Main.java";
 
     //在静态代码块中初始化字典树
     static {
@@ -28,16 +31,35 @@ public class JavaNativeCodeSandbox extends JavaCodeSandbox {
     }
 
     @Override
+    protected String getCodeFileName() {
+        return CODE_FILE_NAME;
+    }
+
+    @Override
     protected RunCodeStrategyEnum getRunCodeStrategyEnum() {
         return RunCodeStrategyEnum.NATIVE;
     }
 
     @Override
+    protected String getCompileCmd(File userCodeFile) {
+        String userCodePath = userCodeFile.getAbsolutePath();
+        return String.format("javac -encoding utf-8 -J-Dfile.encoding=UTF-8 %s", userCodePath);
+    }
+
+    @Override
     protected RunCodeContext buildContext(File userCodeFile, List<String> inputList) {
-        RunCodeContext runCodeContext = super.buildContext(userCodeFile, inputList);
+        RunCodeContext runCodeContext = new RunCodeContext();
+        runCodeContext.setUserCodeFile(userCodeFile);
+        runCodeContext.setInputList(inputList);
         String userCodeParentPath = userCodeFile.getParentFile().getAbsolutePath();
-        runCodeContext.setRunCmd(new String[]{"java", "-cp", userCodeParentPath, "Main"});
+        runCodeContext.setRunCmd(new String[]{"java", "-Xmx256m", "-Dfile.encoding=UTF-8", "-cp", userCodeParentPath, "Main"});
         return runCodeContext;
+    }
+
+    @Override
+    protected String getErrorMessage(String message) {
+        String regex = "/home/.*?\\.java";
+        return message.replaceAll(regex, "Main.java");
     }
 
     @Override
