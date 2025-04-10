@@ -2,11 +2,12 @@ package com.hqing.hqojcodesandbox.exception;
 
 
 import com.hqing.hqojcodesandbox.common.BaseResponse;
-import com.hqing.hqojcodesandbox.common.ErrorCode;
 import com.hqing.hqojcodesandbox.common.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.format.DateTimeParseException;
 
 /**
  * 全局异常处理器
@@ -27,5 +28,11 @@ public class GlobalExceptionHandler {
     public BaseResponse<?> runtimeExceptionHandler(RuntimeException e) {
         log.error("RuntimeException", e);
         return ResultUtils.error(ErrorCode.SYSTEM_ERROR, "系统错误");
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public BaseResponse<?>dateTimeParseExceptionHandler(DateTimeParseException e) {
+        log.error("DateTimeParseException", e);
+        return ResultUtils.error(ErrorCode.FORBIDDEN_ERROR);
     }
 }

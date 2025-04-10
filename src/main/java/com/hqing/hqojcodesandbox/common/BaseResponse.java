@@ -1,5 +1,6 @@
 package com.hqing.hqojcodesandbox.common;
 
+import com.hqing.hqojcodesandbox.exception.ErrorCode;
 import lombok.Data;
 
 import java.io.Serializable;

@@ -1,13 +1,16 @@
 package com.hqing.hqojcodesandbox.controller;
 
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import com.hqing.hqojcodesandbox.common.BaseResponse;
-import com.hqing.hqojcodesandbox.common.ErrorCode;
 import com.hqing.hqojcodesandbox.common.ResultUtils;
 import com.hqing.hqojcodesandbox.core.CodeSandbox;
 import com.hqing.hqojcodesandbox.core.CodeSandboxFactory;
 import com.hqing.hqojcodesandbox.exception.BusinessException;
+import com.hqing.hqojcodesandbox.exception.ErrorCode;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,8 +35,10 @@ import java.util.List;
 @RestController("/")
 @Slf4j
 public class MainController {
+    //请求头
     private static final String AUTH_REQUEST_HEADER = "auth";
-    private static final String AUTH_REQUEST_SECRET = "secretKey";
+    //aes加密key
+    private static final String KEY = "KBRt+WYJsR8utnYMLeoZvA==";
 
     @Resource
     private CodeSandboxFactory factory;
@@ -50,9 +56,19 @@ public class MainController {
         }
         //权限校验
         String secret = httpServletRequest.getHeader(AUTH_REQUEST_HEADER);
-        if (StrUtil.isBlank(secret) || !secret.equals(AUTH_REQUEST_SECRET)) {
-            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        if (StrUtil.isBlank(secret)) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_ERROR);
         }
+        //解密请求头中的日期字段
+        SymmetricCrypto symmetricCrypto = new SymmetricCrypto(SymmetricAlgorithm.AES, KEY.getBytes());
+        String decryptStr = symmetricCrypto.decryptStr(secret, CharsetUtil.CHARSET_UTF_8);
+        LocalDateTime localDateTime = LocalDateTime.parse(decryptStr);
+        LocalDateTime now = LocalDateTime.now();
+        //如果请求头中的时间不在当前时间一小时范围内, 拒绝访问
+        if (localDateTime.isBefore(now.minusHours(1)) || localDateTime.isAfter(now.plusHours(1))) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_ERROR);
+        }
+
         //参数校验
         String code = executeCodeRequest.getCode();
         String language = executeCodeRequest.getLanguage();

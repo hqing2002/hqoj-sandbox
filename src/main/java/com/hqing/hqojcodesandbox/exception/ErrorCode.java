@@ -1,4 +1,4 @@
-package com.hqing.hqojcodesandbox.common;
+package com.hqing.hqojcodesandbox.exception;
 
 /**
  * 自定义错误码

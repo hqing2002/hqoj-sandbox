@@ -1,5 +1,7 @@
 package com.hqing.hqojcodesandbox.common;
 
+import com.hqing.hqojcodesandbox.exception.ErrorCode;
+
 /**
  * 返回工具类
  *

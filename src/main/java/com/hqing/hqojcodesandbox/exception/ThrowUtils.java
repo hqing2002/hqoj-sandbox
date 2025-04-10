@@ -1,8 +1,6 @@
 package com.hqing.hqojcodesandbox.exception;
 
 
-import com.hqing.hqojcodesandbox.common.ErrorCode;
-
 /**
  * 抛异常工具类
  *
