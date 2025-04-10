@@ -15,10 +15,7 @@ import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +29,9 @@ import java.util.List;
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
-@RestController("/")
 @Slf4j
+@RestController
+@RequestMapping("/")
 public class MainController {
     //请求头
     private static final String AUTH_REQUEST_HEADER = "auth";

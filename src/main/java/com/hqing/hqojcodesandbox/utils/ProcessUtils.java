@@ -13,9 +13,6 @@ import java.io.*;
 public class ProcessUtils {
     /**
      * 获取进程的控制台输出信息
-     *
-     * @param runProcess
-     * @param operateName
      */
     public static ExecuteMessage getProcessMessage(Process runProcess, String operateName) {
         ExecuteMessage executeMessage = new ExecuteMessage();
@@ -57,10 +54,6 @@ public class ProcessUtils {
 
     /**
      * 执行交互式进程, 并获取信息, 注意调用方需要自己拼接参数
-     *
-     * @param runProcess
-     * @param input
-     * @return
      */
     public static ExecuteMessage runInteractProcessAndGetMessage(Process runProcess, String input) {
         ExecuteMessage executeMessage = new ExecuteMessage();

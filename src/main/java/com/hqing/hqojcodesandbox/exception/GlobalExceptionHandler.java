@@ -1,6 +1,7 @@
 package com.hqing.hqojcodesandbox.exception;
 
 
+import cn.hutool.crypto.CryptoException;
 import com.hqing.hqojcodesandbox.common.BaseResponse;
 import com.hqing.hqojcodesandbox.common.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class GlobalExceptionHandler {
         return ResultUtils.error(ErrorCode.SYSTEM_ERROR, "系统错误");
     }
 
-    @ExceptionHandler(DateTimeParseException.class)
+    @ExceptionHandler({DateTimeParseException.class, CryptoException.class})
     public BaseResponse<?>dateTimeParseExceptionHandler(DateTimeParseException e) {
         log.error("DateTimeParseException", e);
         return ResultUtils.error(ErrorCode.FORBIDDEN_ERROR);
