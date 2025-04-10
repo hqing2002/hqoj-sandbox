@@ -30,10 +30,4 @@ public class GlobalExceptionHandler {
         log.error("RuntimeException", e);
         return ResultUtils.error(ErrorCode.SYSTEM_ERROR, "系统错误");
     }
-
-    @ExceptionHandler({DateTimeParseException.class, CryptoException.class})
-    public BaseResponse<?>dateTimeParseExceptionHandler(DateTimeParseException e) {
-        log.error("DateTimeParseException", e);
-        return ResultUtils.error(ErrorCode.FORBIDDEN_ERROR);
-    }
 }

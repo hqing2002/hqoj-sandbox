@@ -43,7 +43,8 @@ public class MainController {
 
     @GetMapping("/health")
     public BaseResponse<String> healthCheck() {
-        return ResultUtils.success("ok");
+        SymmetricCrypto symmetricCrypto = new SymmetricCrypto(SymmetricAlgorithm.AES, KEY.getBytes());
+        return ResultUtils.success(symmetricCrypto.encryptHex(LocalDateTime.now().toString()));
     }
 
     @PostMapping("/executeCode")
@@ -58,12 +59,18 @@ public class MainController {
             throw new BusinessException(ErrorCode.FORBIDDEN_ERROR);
         }
         //解密请求头中的日期字段
+        LocalDateTime timeFromRequest;
         SymmetricCrypto symmetricCrypto = new SymmetricCrypto(SymmetricAlgorithm.AES, KEY.getBytes());
-        String decryptStr = symmetricCrypto.decryptStr(secret, CharsetUtil.CHARSET_UTF_8);
-        LocalDateTime localDateTime = LocalDateTime.parse(decryptStr);
+        try {
+            String decryptStr = symmetricCrypto.decryptStr(secret, CharsetUtil.CHARSET_UTF_8);
+            timeFromRequest = LocalDateTime.parse(decryptStr);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_ERROR);
+        }
+
         LocalDateTime now = LocalDateTime.now();
         //如果请求头中的时间不在当前时间一小时范围内, 拒绝访问
-        if (localDateTime.isBefore(now.minusHours(1)) || localDateTime.isAfter(now.plusHours(1))) {
+        if (timeFromRequest.isBefore(now.minusHours(1)) || timeFromRequest.isAfter(now.plusHours(1))) {
             throw new BusinessException(ErrorCode.FORBIDDEN_ERROR);
         }
 
