@@ -15,6 +15,7 @@ public enum CodeLanguageEnum {
     GO("go", "GoCodeSandbox"),
     JAVA("java", "JavaCodeSandbox"),
     JAVA_NATIVE("java-native", "JavaNativeCodeSandbox"),
+    PYTHON("python", "PythonCodeSandbox"),
     DEFAULT("default", "DefaultCodeSandbox");
 
     private final String languageName;
