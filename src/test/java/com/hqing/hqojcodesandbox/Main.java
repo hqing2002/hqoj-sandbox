@@ -2,6 +2,7 @@ package com.hqing.hqojcodesandbox;
 
 import com.hqing.hqojcodesandbox.core.CodeSandbox;
 import com.hqing.hqojcodesandbox.core.CodeSandboxFactory;
+import com.hqing.hqojcodesandbox.utils.RegularUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -19,17 +20,11 @@ public class Main {
 
     @Test
     public void test() {
-        CodeSandbox codeSandbox = factory.getInstance("java");
-        System.out.println(codeSandbox);
-        CodeSandbox codeSandbox1 = factory.getInstance("c");
-        System.out.println(codeSandbox1);
-        CodeSandbox codeSandbox2 = factory.getInstance("cpp");
-        System.out.println(codeSandbox2);
-        CodeSandbox codeSandbox3 = factory.getInstance("go");
-        System.out.println(codeSandbox3);
-        CodeSandbox codeSandbox4 = factory.getInstance("java-native");
-        System.out.println(codeSandbox4);
-        CodeSandbox codeSandbox5 = factory.getInstance("python");
-        System.out.println(codeSandbox5);
+
+    }
+
+    public static void main(String[] args) {
+        String s = RegularUtils.replaceBetween("1273*axxx\nxx\\' | .c123", "a", ".c", "hhh");
+        System.out.println(s);
     }
 }

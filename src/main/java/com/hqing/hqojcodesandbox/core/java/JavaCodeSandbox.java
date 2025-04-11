@@ -3,6 +3,7 @@ package com.hqing.hqojcodesandbox.core.java;
 import com.github.dockerjava.api.model.AccessMode;
 import com.hqing.hqojcodesandbox.core.CodeSandboxTemplate;
 import com.hqing.hqojcodesandbox.strategy.model.RunCodeContext;
+import com.hqing.hqojcodesandbox.utils.RegularUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -41,7 +42,7 @@ public class JavaCodeSandbox extends CodeSandboxTemplate {
 
     @Override
     protected String getErrorMessage(String message) {
-        String regex = "/home/.*?\\.java";
-        return message.replaceAll(regex, "Main.java");
+        String filterMessage = RegularUtils.replaceBetween(message, "java.lang.Exception", "Main.java", "Main.java");
+        return RegularUtils.replaceBetween(filterMessage, "/home", "Main.java", "Main.java");
     }
 }

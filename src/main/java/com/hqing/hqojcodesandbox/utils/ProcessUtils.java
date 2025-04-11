@@ -34,7 +34,7 @@ public class ProcessUtils {
             // 读取错误输出
             StringBuilder errOutput = new StringBuilder();
             while ((line = errReader.readLine()) != null) {
-                errOutput.append(line).append("\n");
+                errOutput.append(line.trim()).append("\n");
             }
             executeMessage.setErrorMessage(errOutput.toString());
 

@@ -6,6 +6,7 @@ import com.hqing.hqojcodesandbox.core.CodeSandboxTemplate;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import com.hqing.hqojcodesandbox.strategy.model.RunCodeContext;
+import com.hqing.hqojcodesandbox.utils.RegularUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -52,10 +53,6 @@ public class GoCodeSandbox extends CodeSandboxTemplate {
 
     @Override
     protected String getErrorMessage(String message) {
-        String regex = "/home/.*?\\.go";
-        String filteredContent = message.replaceAll(regex, "Go.cpp");
-        regex = "java.lang.Exception: ";
-        filteredContent = filteredContent.replaceAll(regex, "");
-        return filteredContent;
+        return RegularUtils.replaceBetween(message, "java.lang.Exception", "Main.go", "Main.go");
     }
 }

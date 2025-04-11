@@ -5,6 +5,7 @@ import com.hqing.hqojcodesandbox.core.CodeSandboxTemplate;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import com.hqing.hqojcodesandbox.strategy.model.RunCodeContext;
+import com.hqing.hqojcodesandbox.utils.RegularUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -52,10 +53,6 @@ public class PythonCodeSandbox extends CodeSandboxTemplate {
 
     @Override
     protected String getErrorMessage(String message) {
-        String regex = "/home/.*?\\.py";
-        String filteredContent = message.replaceAll(regex, "Main.py");
-        regex = "java.lang.Exception: ";
-        filteredContent = filteredContent.replaceAll(regex, "");
-        return filteredContent;
+        return RegularUtils.replaceBetween(message, "java.lang.Exception", "Main.py", "Main.py");
     }
 }

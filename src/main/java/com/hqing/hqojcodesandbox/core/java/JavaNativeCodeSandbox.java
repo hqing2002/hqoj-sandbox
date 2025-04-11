@@ -7,6 +7,7 @@ import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import com.hqing.hqojcodesandbox.strategy.model.RunCodeContext;
 import com.hqing.hqojcodesandbox.strategy.model.RunCodeStrategyEnum;
+import com.hqing.hqojcodesandbox.utils.RegularUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -58,8 +59,8 @@ public class JavaNativeCodeSandbox extends CodeSandboxTemplate {
 
     @Override
     protected String getErrorMessage(String message) {
-        String regex = "/home/.*?\\.java";
-        return message.replaceAll(regex, "Main.java");
+        String filterMessage = RegularUtils.replaceBetween(message, "java.lang.Exception", "Main.java", "Main.java");
+        return RegularUtils.replaceBetween(filterMessage, "/home", "Main.java", "Main.java");
     }
 
     @Override
