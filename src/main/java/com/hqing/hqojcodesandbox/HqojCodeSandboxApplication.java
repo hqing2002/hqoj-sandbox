@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * FileDescribe
+ * 代码沙箱启动类
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */

@@ -8,11 +8,11 @@ import org.apache.commons.lang3.ObjectUtils;
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
+@Getter
 public enum RunCodeStrategyEnum {
     DOCKER("DockerRunner"),
     NATIVE("NativeRunner");
 
-    @Getter
     private final String strategyName;
 
 
