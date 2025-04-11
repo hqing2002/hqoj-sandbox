@@ -1,5 +1,6 @@
-package com.hqing.hqojcodesandbox.core;
+package com.hqing.hqojcodesandbox.core.other;
 
+import com.hqing.hqojcodesandbox.core.CodeSandbox;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeRequest;
 import com.hqing.hqojcodesandbox.model.ExecuteCodeResponse;
 import com.hqing.hqojcodesandbox.model.SandboxResponseStatusEnum;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
-@Component
+@Component(value = "DefaultCodeSandbox")
 public class DefaultCodeSandbox implements CodeSandbox {
     @Override
     public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {

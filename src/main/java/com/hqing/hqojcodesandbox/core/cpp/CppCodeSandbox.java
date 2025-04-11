@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
-@Component
+@Component(value = "CppCodeSandbox")
 public class CppCodeSandbox extends CodeSandboxTemplate {
     private static final String CODE_FILE_NAME = "Main.cpp";
     private static final String EXE_FILE_NAME = "main.out";

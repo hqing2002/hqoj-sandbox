@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
-@Component
+@Component(value = "JavaNativeCodeSandbox")
 public class JavaNativeCodeSandbox extends CodeSandboxTemplate {
     //定义字典树存储黑名单
     private static final WordTree BLACK_KEY_LIST;

@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
-@Component
+@Component(value = "JavaCodeSandbox")
 public class JavaCodeSandbox extends CodeSandboxTemplate {
     private static final String CODE_FILE_NAME = "Main.java";
 

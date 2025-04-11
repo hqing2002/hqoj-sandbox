@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
-@Component
+@Component(value = "GoCodeSandbox")
 public class GoCodeSandbox extends CodeSandboxTemplate {
     private static final String CODE_FILE_NAME = "Main.go";
     private static final String EXE_FILE_NAME = "main";

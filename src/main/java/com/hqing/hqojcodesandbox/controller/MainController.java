@@ -77,8 +77,7 @@ public class MainController {
         //参数校验
         String code = executeCodeRequest.getCode();
         String language = executeCodeRequest.getLanguage();
-        //todo 测试, 设置用Java原生
-        language = "java-native";
+
         if (StringUtils.isAnyBlank(code, language)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -97,7 +96,7 @@ public class MainController {
         String separators = "###############################################################";
         log.info("\n{}\n用户提交代码, 语言:{}\n{}", separators, language, code);
         //沙箱工厂调用沙箱实现类
-        CodeSandbox codeSandbox = factory.newInstance(language);
+        CodeSandbox codeSandbox = factory.getInstance(language);
         ExecuteCodeResponse executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
         //截取前几个输出元素
         List<String> outputList = ListUtil.sub(executeCodeResponse.getOutputList(), 0, 10);

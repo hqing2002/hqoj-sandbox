@@ -1,50 +1,41 @@
 package com.hqing.hqojcodesandbox.core;
 
-import com.hqing.hqojcodesandbox.core.cpp.CppCodeSandbox;
-import com.hqing.hqojcodesandbox.core.go.GoCodeSandbox;
-import com.hqing.hqojcodesandbox.core.java.JavaCodeSandbox;
-import com.hqing.hqojcodesandbox.core.java.JavaNativeCodeSandbox;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 代码沙箱工厂(根据传入的字符串参数进行创建沙箱实现实例)
  *
  * @author <a href="https://github.com/hqing2002">Hqing</a>
  */
-@Component
+@Slf4j
+@Service
 public class CodeSandboxFactory {
-    @Resource
-    private JavaCodeSandbox javaCodeSandbox;
+    private final Map<String, CodeSandbox> codeSandboxMap = new ConcurrentHashMap<>();
 
     @Resource
-    private JavaNativeCodeSandbox javaNativeCodeSandbox;
+    private ApplicationContext applicationContext;
 
-    @Resource
-    private CppCodeSandbox cppCodeSandbox;
+    @PostConstruct
+    private void init() {
+        //@PostConstruct:在对象创建后执行的初始化逻辑, 使用ApplicationContext注入所有CodeSandbox实现类
+        codeSandboxMap.putAll(applicationContext.getBeansOfType(CodeSandbox.class));
+    }
 
-    @Resource
-    private GoCodeSandbox goCodeSandbox;
-
-    @Resource
-    private DefaultCodeSandbox defaultCodeSandbox;
-
-    /**
-     * 创造代码沙箱实例
-     */
-    public CodeSandbox newInstance(String type) {
-        switch (type) {
-            case "java":
-                return javaCodeSandbox;
-            case "java-native":
-                return javaNativeCodeSandbox;
-            case "cpp":
-                return cppCodeSandbox;
-            case "go":
-                return goCodeSandbox;
-            default:
-                return defaultCodeSandbox;
+    public CodeSandbox getInstance(String languageName) {
+        CodeLanguageEnum languageEnum = CodeLanguageEnum.getBeanByLanguageName(languageName);
+        String beanName = languageEnum.getBeanName();
+        if (StringUtils.isEmpty(beanName)) {
+            log.error("策略管理器获取Bean失败, 枚举类名称配置错误");
+            return null;
         }
+        return codeSandboxMap.get(beanName);
     }
 }

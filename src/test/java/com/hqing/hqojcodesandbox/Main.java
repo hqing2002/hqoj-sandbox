@@ -1,12 +1,11 @@
 package com.hqing.hqojcodesandbox;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.lang.UUID;
+import com.hqing.hqojcodesandbox.core.CodeSandbox;
+import com.hqing.hqojcodesandbox.core.CodeSandboxFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.Resource;
 
 /**
  * FileDescribe
@@ -15,22 +14,22 @@ import java.nio.charset.StandardCharsets;
  */
 @SpringBootTest
 public class Main {
+    @Resource
+    private CodeSandboxFactory factory;
+
     @Test
     public void test() {
-        //获取工作目录(在IDE中为项目根目录)
-        String userDir = System.getProperty("user.dir");
-
-        //这里用File.separator作为分隔符而不是直接写'\\'是因为在linux和windows上分隔符不一样, 用这个可以自动识别兼容不同系统
-        //globalCodePathName: userDir/tempCode
-        String globalCodePathName = userDir + File.separator + "testCodeDir";
-
-        //把用户的代码隔离到文件夹中, 命名用UUID
-        //userCodePath: userDir/tempCode/UUID/getCodeFileName
-        String userCodeParentPath = globalCodePathName + File.separator + UUID.randomUUID();
-        String userCodePath = userCodeParentPath + File.separator + "test.txt";
-        File hello = FileUtil.writeString("hello", userCodePath, StandardCharsets.UTF_8);
-        System.out.println(hello.getAbsolutePath());
-        System.out.println(hello.getParentFile().getAbsoluteFile());
-
+        CodeSandbox codeSandbox = factory.getInstance("java");
+        System.out.println(codeSandbox);
+        CodeSandbox codeSandbox1 = factory.getInstance("c");
+        System.out.println(codeSandbox1);
+        CodeSandbox codeSandbox2 = factory.getInstance("cpp");
+        System.out.println(codeSandbox2);
+        CodeSandbox codeSandbox3 = factory.getInstance("go");
+        System.out.println(codeSandbox3);
+        CodeSandbox codeSandbox4 = factory.getInstance("java-native");
+        System.out.println(codeSandbox4);
+        CodeSandbox codeSandbox5 = factory.getInstance("python");
+        System.out.println(codeSandbox5);
     }
 }
