@@ -177,12 +177,13 @@ public abstract class CodeSandboxTemplate implements CodeSandbox {
             StringBuilder message = new StringBuilder();
             for (String output : outputList) {
                 if (StrUtil.isNotBlank(output)) {
-                    message.append(output);
+                    message.append(output).append(",");
                 }
             }
             if (message.length() == 0) {
                 message.append("暂无输出");
             }
+            message.deleteCharAt(message.length() - 1);
             executeCodeResponse.setMessage(message.toString());
             //设置状态为AC
             executeCodeResponse.setStatus(SandboxResponseStatusEnum.ACCEPT.getValue());
