@@ -31,7 +31,7 @@ sudo apt update
 sudo apt install build-essential
 
 ##验证
-g++ --verison
+g++ --version
 ```
 
 go
@@ -47,9 +47,11 @@ sudo tar -zxvf go1.24.2.linux-amd64.tar.gz
 ##配置环境变量
 sudo mkdir -p /home/go/bin /home/go/pkg /home/go/src
 vi .bashrc
+
 port GOROOT=/usr/local/go
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+
 source .bashrc
 
 ##验证

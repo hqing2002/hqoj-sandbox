@@ -51,6 +51,6 @@ public class CCodeSandbox extends CodeSandboxTemplate {
 
     @Override
     protected String getErrorMessage(String message) {
-        return RegularUtils.replaceBetween(message, "java.lang.Exception", ".o", "Main.c");
+        return RegularUtils.replaceBetween(message, "java.lang.Exception", "Main.c", "Main.c");
     }
 }
